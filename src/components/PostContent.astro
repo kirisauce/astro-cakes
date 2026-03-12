@@ -1,0 +1,61 @@
+---
+import MarkdownWrapper from './MarkdownWrapper.astro';
+
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+import Icon from './Icon.astro';
+import { formatInstant } from '../utils/format';
+
+export interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+
+const { title, updateDate, pubDate } = post.data;
+
+const { Content, headings } = await render(post);
+---
+
+<div class="post-content">
+  <h1 class="article-title">{title}</h1>
+  {
+    pubDate && (
+      <time datetime={pubDate.toUTCString()} class="widget-with-icon">
+        <Icon src="mdi:calendar" />
+        {formatInstant(pubDate)}
+      </time>
+    )
+  }
+  {
+    updateDate && (
+      <time datetime={updateDate.toUTCString()} class="widget-with-icon">
+        <Icon src="mdi:calendar-edit-outline" />
+        {formatInstant(updateDate)}
+      </time>
+    )
+  }
+  <hr />
+  <MarkdownWrapper>
+    <Content />
+  </MarkdownWrapper>
+</div>
+
+<style lang="stylus">
+  .article-title {
+    margin: 0.5rem 0;
+  }
+
+  hr {
+    border: solid 3px; // 添加语义化颜色，然后删除这段注释
+    border-radius: 3px;
+
+    margin: 0.5em -0.75em;
+  }
+  .widget-with-icon {
+    font-family: var(--font-monospace);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+</style>

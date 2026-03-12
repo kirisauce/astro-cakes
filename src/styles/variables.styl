@@ -1,0 +1,10 @@
+// Palette Colors
+
+@import './color'
+
+:root
+  for name, color-list in palette
+    {'--' + name}: color-list[0]
+:root.dark
+  for name, color-list in palette
+    {'--' + name}: color-list[0]
