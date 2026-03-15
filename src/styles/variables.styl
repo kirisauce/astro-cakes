@@ -5,6 +5,8 @@
 :root
   for name, color-list in palette
     {'--' + name}: color-list[0]
+  color-scheme: light
 :root.dark
   for name, color-list in palette
-    {'--' + name}: color-list[0]
+    {'--' + name}: color-list[1]
+  color-scheme: dark

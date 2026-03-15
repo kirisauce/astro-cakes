@@ -72,27 +72,3 @@ export class StoredPreference<T> implements EventTarget {
     return this.#ev.dispatchEvent(event);
   }
 }
-
-export const preference = <T>(
-  key: string,
-  options: StoredPreferenceOptions<T>,
-) => new StoredPreference(key, options);
-
-//
-// Client Side Preferences
-//
-
-export type ColorScheme = 'light' | 'dark';
-export type ColorSchemePreference = 'light' | 'dark' | 'auto';
-
-export type PreferenceTable = {
-  'color-scheme': StoredPreference<ColorSchemePreference>;
-};
-
-window.__PREFERENCES__ = {
-  'color-scheme': preference<ColorSchemePreference>('color-scheme', {
-    default() {
-      return 'auto';
-    },
-  }),
-};
