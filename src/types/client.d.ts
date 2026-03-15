@@ -1,10 +1,7 @@
-export type ColorScheme = 'light' | 'dark';
-export type ColorSchemePreference = 'light' | 'dark' | 'system';
-
-export type PreferenceKey = 'color-scheme'
+import type { PreferenceTable } from "../client-scripts/preference";
 
 declare global {
   interface Window {
-    setPreference(key: 'color-scheme', value: ColorSchemePreference);
+    __PREFERENCES__: PreferenceTable;
   }
 }
