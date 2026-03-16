@@ -1,8 +1,10 @@
 // @ts-check
 import mdx from '@astrojs/mdx';
 import { defineConfig, fontProviders } from 'astro/config';
-
 import svelte from '@astrojs/svelte';
+
+// Vite plugins
+import icon from 'unplugin-icons/vite';
 
 type Variants = NonNullable<
   NonNullable<Parameters<typeof defineConfig>[0]['fonts']>[number]['options']
@@ -11,6 +13,12 @@ type Variants = NonNullable<
 // https://astro.build/config
 export default defineConfig({
   integrations: [mdx(), svelte()],
+
+  vite: {
+    plugins: [icon({
+      compiler: 'svelte',
+    })],
+  },
 
   fonts: [
     {
