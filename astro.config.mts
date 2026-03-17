@@ -6,18 +6,27 @@ import svelte from '@astrojs/svelte';
 // Vite plugins
 import icon from 'unplugin-icons/vite';
 
+import expressiveCode from 'astro-expressive-code';
+import { pluginLineNumbers } from '@expressive-code/plugin-line-numbers';
+
 type Variants = NonNullable<
   NonNullable<Parameters<typeof defineConfig>[0]['fonts']>[number]['options']
 >['variants'];
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [mdx(), svelte()],
+  integrations: [
+    expressiveCode(),
+    mdx(),
+    svelte(),
+  ],
 
   vite: {
-    plugins: [icon({
-      compiler: 'svelte',
-    })],
+    plugins: [
+      icon({
+        compiler: 'svelte',
+      }),
+    ],
   },
 
   fonts: [
