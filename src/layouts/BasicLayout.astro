@@ -1,14 +1,23 @@
 ---
-import { site } from "../config";
-import HeadBase from "../components/HeadBase.astro";
-import { Image } from "astro:assets";
-import NavBar from "../components/NavBar.astro";
+import { site } from '../config';
+import HeadBase from '../components/HeadBase.astro';
+import { Image } from 'astro:assets';
+import NavBar from '../components/NavBar.astro';
 
 export interface Props {
   coverImage?: ImageMetadata;
 }
 
-const { coverImage } = Astro.props;
+const { coverImage: pageCover } = Astro.props;
+
+const getCoverImage = () => {
+  if (pageCover === undefined || pageCover === null) {
+    return site.defaultCover;
+  } else {
+    return pageCover;
+  }
+};
+const coverImage = getCoverImage();
 ---
 
 <html lang={site.lang}>
@@ -27,15 +36,15 @@ const { coverImage } = Astro.props;
       }
       <div class="page-content">
         <aside class="part-left">
-          <slot name="part-left"></slot>
+          <slot name="part-left" />
         </aside>
 
         <div class="part-center">
-          <slot name="part-center"></slot>
+          <slot name="part-center" />
         </div>
 
         <aside class="part-right">
-          <slot name="part-right"></slot>
+          <slot name="part-right" />
         </aside>
       </div>
     </div>

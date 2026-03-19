@@ -1,4 +1,8 @@
-import { defineNavBarConfig, defineSiteConfig, defineThemeConfig } from './types/config';
+import {
+  defineNavBarConfig,
+  defineSiteConfig,
+  defineThemeConfig,
+} from './types/config';
 
 export const site = defineSiteConfig({
   title: "kirisauce's blog",
@@ -15,4 +19,4 @@ export const theme = defineThemeConfig({
     themeDark: 'andromeeda',
     themeLight: 'rose-pine-dawn',
   },
-})
+});

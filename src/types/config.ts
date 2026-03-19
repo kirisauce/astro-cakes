@@ -7,6 +7,7 @@ export const zSiteConfig = z.object({
   titleTemplate: z.string().optional(),
   lang: z.string().default('en'),
 
+  defaultCover: z.any().optional(),
   coverImageStyle: z
     .enum(['static', 'parallax', 'half-parallax'])
     .default('parallax'),
