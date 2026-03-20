@@ -3,6 +3,7 @@ import Icon from './Icon.astro';
 import { navbar, site } from '../config';
 import MenuButton from './NavBar/MenuButton.svelte';
 import ColorSchemePanel from './NavBar/ColorSchemePanel.svelte';
+import ThemeColorPanel from './NavBar/ThemeColorPanel.svelte';
 
 const cs_switch = (icon: string, text: string) => `
   <button class="cs-switch">
@@ -31,11 +32,15 @@ const cs_switch = (icon: string, text: string) => `
         <MenuButton client:only target="#nav-color-scheme-switch"
           ><Icon src="mdi:sun-moon-stars" /></MenuButton
         >
+        <MenuButton client:only target="#nav-theme-color-panel"
+          ><Icon src="mdi:color" /></MenuButton
+        >
       </slot>
     </div>
 
     <div class="dropdown-container">
       <ColorSchemePanel class="dropdown right" client:only />
+      <ThemeColorPanel class="dropdown right" client:only />
     </div>
   </nav>
 </div>

@@ -18,15 +18,15 @@ namespace genpreset {
   export const dropdown = (opts: CustomAnimation) => ({
     enter: {
       keyframes: [
-        { opacity: 0, transform: 'translateY(-10%)' },
-        { opacity: 1, transform: 'translateY(0)' },
+        { opacity: 0, transform: 'translateY(-40%) scale(0.5)' },
+        { opacity: 1, transform: 'translateY(0) scale(1.0)' },
       ],
       options: { ...opts },
     },
     exit: {
       keyframes: [
-        { opacity: 1, transform: 'translateY(0)' },
-        { opacity: 0, transform: 'translateY(-10%)' },
+        { opacity: 1, transform: 'translateY(0) scale(1.0)' },
+        { opacity: 0, transform: 'translateY(-60%) scale(0.65)' },
       ],
       options: { ...opts },
     },
@@ -54,10 +54,15 @@ const generateId = () =>
     .toString(36)
     .slice(2, 2 + 8);
 
-const autoCloseHandlerMap = new WeakMap<
-  HTMLElement,
-  { handler: any; eventName: string }
->();
+export interface AutoCloseHandler {
+  eventHandler: any;
+  eventName: string;
+  ignoreEvent?: Event;
+
+  ignore?: (event: Event) => void;
+}
+
+const autoCloseHandlerMap = new WeakMap<HTMLElement, AutoCloseHandler>();
 
 export interface ToggleOptions {
   /**
@@ -83,7 +88,22 @@ export interface ToggleOptions {
   autoCloseWhen?: 'pointerdown' | 'pointerup' | 'pointerout' | 'click';
 }
 
-export const toggle = (el: HTMLElement, options?: ToggleOptions): Animation => {
+export interface ToggleResult {
+  /**
+   * The triggered animation.
+   */
+  animation: Animation;
+
+  /**
+   * The auto close handler.
+   */
+  autoCloseHandler: WeakRef<AutoCloseHandler> | undefined;
+}
+
+export const toggle = (
+  el: HTMLElement,
+  options?: ToggleOptions,
+): ToggleResult => {
   const {
     presetName,
     autoCloseWhen: autoCloseWhen,
@@ -108,7 +128,7 @@ export const toggle = (el: HTMLElement, options?: ToggleOptions): Animation => {
 
     // Remove previous auto-close listener if it exists
     if (autoCloseHandlerMap.has(el)) {
-      const { handler, eventName } = autoCloseHandlerMap.get(el)!;
+      const { eventHandler: handler, eventName } = autoCloseHandlerMap.get(el)!;
       document.removeEventListener(eventName, handler);
       autoCloseHandlerMap.delete(el);
     }
@@ -134,7 +154,10 @@ export const toggle = (el: HTMLElement, options?: ToggleOptions): Animation => {
     el.setAttribute(ANIM_ID_KEY, anim.id);
 
     anim.play();
-    return anim;
+    return {
+      animation: anim,
+      autoCloseHandler: undefined,
+    };
   } else if (currentState === 'hide') {
     // From hide to show (enter)
     el.setAttribute(STATE_KEY, 'show');
@@ -153,18 +176,37 @@ export const toggle = (el: HTMLElement, options?: ToggleOptions): Animation => {
     el.setAttribute(ANIM_ID_KEY, anim.id);
 
     // Set up auto close listener
+    let autoCloseHandler: undefined | WeakRef<AutoCloseHandler>;
     if (autoCloseWhen !== undefined) {
-      const handler = () => {
-        toggle(el, { autoCloseWhen: undefined });
+      const eventHandler = (ev: Event) => {
+        if (ev !== autoCloseHandler?.deref()?.ignoreEvent) {
+          toggle(el, { autoCloseWhen: undefined });
+          document.removeEventListener(autoCloseWhen, eventHandler);
+        }
       };
-      document.addEventListener(autoCloseWhen, handler, { once: true });
+      document.addEventListener(autoCloseWhen, eventHandler);
 
-      autoCloseHandlerMap.set(el, { handler, eventName: autoCloseWhen });
+      const autoCloseHandlerRaw = {
+        eventHandler,
+        eventName: autoCloseWhen,
+        ignoreEvent: undefined,
+
+        ignore(event) {
+          this.ignoreEvent = event;
+        },
+      } satisfies AutoCloseHandler;
+      autoCloseHandler = new WeakRef(autoCloseHandlerRaw);
+      autoCloseHandlerMap.set(el, autoCloseHandlerRaw);
     }
 
     anim.play();
-    return anim;
+    return {
+      animation: anim,
+      autoCloseHandler,
+    };
   } else {
     throw new Error(`Invalid state: ${currentState}`);
   }
 };
+
+export const getAutoClose = (el: HTMLElement) => autoCloseHandlerMap.get(el);

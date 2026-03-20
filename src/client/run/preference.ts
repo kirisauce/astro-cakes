@@ -1,5 +1,9 @@
-import type { ColorScheme, ColorSchemePreference } from '../../types/client';
-import { computed } from '../../utils/reactive';
+import type {
+  ColorScheme,
+  ColorSchemePreference,
+  PreferenceTable,
+} from '../../types/client';
+import { computed, ref } from '../../utils/reactive';
 import { StoredPreference, type StoredPreferenceOptions } from '../preference';
 import { mayStartViewTransition } from '../utils';
 
@@ -18,7 +22,36 @@ window.__PREFERENCES__ = {
       return 'auto';
     },
   }),
+
+  themeHue: preference<number>('theme-hue', {
+    default() {
+      return 0;
+    },
+
+    serialize(value) {
+      return value.toString();
+    },
+
+    deserialize(stored) {
+      const value = parseInt(stored);
+      return isNaN(value) ? 0 : value;
+    },
+  }),
 };
+
+((prefs: PreferenceTable) => {
+  {
+    const updateHtmlHue = (hue: number) => {
+      document.documentElement.style.setProperty('--color-hue', hue.toString());
+    };
+
+    prefs.themeHue.addEventListener('change', () => {
+      updateHtmlHue(prefs.themeHue.value);
+    });
+
+    updateHtmlHue(prefs.themeHue.value);
+  }
+})(window.__PREFERENCES__);
 
 const matchDarkColorScheme = window.matchMedia('(prefers-color-scheme: dark)');
 

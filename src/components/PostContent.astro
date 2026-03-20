@@ -13,7 +13,7 @@ export interface Props {
 
 const { post } = Astro.props;
 
-const { title, updateDate, pubDate } = post.data;
+const { title, updateDate, pubDate, tags } = post.data;
 
 const { Content, headings } = await render(post);
 
@@ -40,6 +40,16 @@ const customComponents = {
       </time>
     )
   }
+  {
+    tags && (
+      <div class="widget-with-icon">
+        <Icon src="mdi:tag-multiple-outline" />
+        {tags.map((tag) => {
+          return <div class="tag">{tag}</div>;
+        })}
+      </div>
+    )
+  }
   <hr />
   <MarkdownWrapper>
     <Content components={customComponents} />
@@ -53,13 +63,28 @@ const customComponents = {
 
   .widget-with-icon {
     font-family: var(--font-monospace);
-    display: flex;
+    display: inline flex;
     align-items: center;
     gap: 6px;
+    color: var(--text);
+    margin-inline-end: 16px;
+
+    :global(>svg) {
+      font-size: 24px;
+      background-color: var(--primary-container);
+      padding: 5px;
+      border-radius: 8px;
+    }
   }
 
   hr {
     margin: 24px -8px
     border-style: dashed;
+  }
+
+  .tag {
+    border-radius: 4px;
+    padding: 2px;
+    background-color: var(--primary-container);
   }
 </style>

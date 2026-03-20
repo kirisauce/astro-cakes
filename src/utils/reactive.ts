@@ -22,6 +22,27 @@ export class ReactiveEventTarget<E extends string> implements EventTarget {
   }
 }
 
+export class Ref<T> extends ReactiveEventTarget<'change'> {
+  #value: T;
+
+  constructor(value: T) {
+    super();
+    this.#value = value;
+  }
+
+  get value(): T {
+    return this.#value;
+  }
+
+  set value(newValue: T) {
+    if (this.#value === newValue) return;
+    this.#value = newValue;
+    this.dispatchEvent(new Event('change'));
+  }
+}
+
+export const ref = <T>(value: T) => new Ref(value);
+
 export interface ComputedOptions<T> {
   /**
    * Whether to compute the value lazily.
@@ -69,7 +90,7 @@ export class Computed<T> extends ReactiveEventTarget<'change'> {
     if (this.#storedValue !== newValue) {
       this.#oldValue = this.#storedValue;
       this.#storedValue = newValue;
-      
+
       this.#isRecomputing = true;
       this.dispatchEvent(new Event('change'));
       this.#isRecomputing = false;

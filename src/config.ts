@@ -17,6 +17,7 @@ export const theme = cfg.defineThemeConfig({
     themeDark: 'andromeeda',
     themeLight: 'rose-pine-dawn',
   },
+  defaultHue: 0,
 });
 
 export const author = cfg.defineAuthorConfig({

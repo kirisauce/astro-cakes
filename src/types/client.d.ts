@@ -9,6 +9,7 @@ export type ColorSchemePreference = 'light' | 'dark' | 'auto';
 
 export type PreferenceTable = {
   colorScheme: StoredPreference<ColorSchemePreference>;
+  themeHue: StoredPreference<number>;
 };
 
 export type CakesTable = {

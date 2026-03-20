@@ -3,6 +3,7 @@
   import IconDark from '~icons/mdi/moon-and-stars?raw';
   import IconAuto from '~icons/mdi/gear-outline?raw';
   import { type ColorSchemePreference } from '../../types/client';
+  import { getAutoClose } from '../../client/toggler';
 
   const props = $props();
   const pref = window.__PREFERENCES__;
@@ -36,7 +37,7 @@
   data-toggler-state="hide"
   style:display="none"
   bind:this={elSelf}
-  onpointerdown={(e) => e.stopPropagation()}
+  onpointerdown={(e) => getAutoClose(elSelf)?.ignore?.(e)}
   {...props}
 >
   <div>Color Scheme</div>

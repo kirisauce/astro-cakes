@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { toggle } from '../../client/toggler';
+  import { toggle, type AutoCloseHandler } from '../../client/toggler';
 
   const {
     target,
@@ -9,15 +9,24 @@
     children?: any;
   } = $props();
 
+  let autoClose: WeakRef<AutoCloseHandler> | undefined;
+
   function onclick(event: Event) {
     const el = document.querySelector(target) as HTMLElement;
     if (!el) return;
-    toggle(el, { autoCloseWhen: 'pointerdown' });
+
+    const { autoCloseHandler } = toggle(el, { autoCloseWhen: 'pointerdown' });
+    autoClose = autoCloseHandler;
+
     event.stopPropagation();
   }
 </script>
 
-<button class="square-button" {onclick}>
+<button
+  class="square-button"
+  {onclick}
+  onpointerdown={(e) => autoClose?.deref()?.ignore?.(e)}
+>
   {@render children()}
 </button>
 

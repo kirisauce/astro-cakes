@@ -1,5 +1,6 @@
 hue = var(--color-hue, 0)
 redhue = 25
+selectionhue = "calc(%s + 45)" % hue
 
 palette = {
   surface-hover: oklch(92% 16% hue) oklch(24% 14% hue)
@@ -26,6 +27,9 @@ palette = {
   error-container:  oklch(90% 10% redhue) oklch(30% 15% redhue)
   on-error:         oklch(100% 0% redhue) oklch(0% 0% redhue)
   on-error-container: oklch(30% 30% redhue) oklch(95% 20% redhue)
+
+  selection-text:       oklch(80% 50% selectionhue) oklch(25% 50% selectionhue)
+  selection-background: oklch(25% 50% selectionhue) oklch(80% 50% selectionhue)
 
   shadow: oklch(0% 0% hue \/ 0.08) oklch(0% 0% hue \/ 0.3)
 }
