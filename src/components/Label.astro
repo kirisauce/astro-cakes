@@ -1,0 +1,33 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+export type Props = HTMLAttributes<'div'> & {
+  position?: 'left' | 'right';
+};
+
+const { position = 'left', ...attrs } = Astro.props;
+---
+
+<label class:list={[position]} {...attrs}>
+  <div class="decoration"></div>
+  <div class="text"><slot /></div>
+</label>
+
+<style lang="stylus">
+  label {
+    display: flex;
+    flex-direction: row;
+
+    &.right {
+      flex-direction: row-reverse;
+    }
+  }
+
+  .decoration {
+    align-self: stretch;
+    border: 3px solid var(--primary);
+    border-radius: 3px;
+    margin-left: 8px;
+    margin-right: 8px;
+  }
+</style>

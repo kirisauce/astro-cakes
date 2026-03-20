@@ -1,40 +1,37 @@
 ---
 import PostContent from '../components/PostContent.astro';
+import AuthorCard from '../components/Cards/AuthorCard.astro';
+import BasicLayout from './BasicLayout.astro';
 
 import type { CollectionEntry } from 'astro:content';
-import BasicLayout from './BasicLayout.astro';
+import { author as authorConfig } from '../config';
 
 export type Props = {
   post: CollectionEntry<'blog'>;
 };
 
-const { coverImage } = Astro.props.post.data;
+const { coverImage, author: postAuthor } = Astro.props.post.data;
+
+const author = postAuthor ?? authorConfig.defaultAuthor;
 
 const layoutProps = {
   coverImage,
-}
+};
 ---
 
 <BasicLayout {...layoutProps}>
-  <Fragment slot="part-center">
+  <Fragment slot="major">
     <main class="card article-content-card">
       <PostContent post={Astro.props.post} />
     </main>
   </Fragment>
+
+  <Fragment slot="aside">
+    {author && <AuthorCard authorId={author} />}
+  </Fragment>
 </BasicLayout>
 
 <style lang="stylus">
-  .card {
-    background-color: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 0.75rem;
-    box-shadow:
-      0 4px 6px -1px rgba(0, 0, 0, 0.1),
-      0 2px 4px -2px rgba(0, 0, 0, 0.1);
-    padding: 1.5rem;
-    transition: border-color 0.2s ease;
-  }
-
   :global(.page:has(.cover-image) .article-content-card) {
     margin-top: calc(-1.5rem - 64px - 48px);
   }

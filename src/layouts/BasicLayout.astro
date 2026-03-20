@@ -1,5 +1,5 @@
 ---
-import { site } from '../config';
+import { site, layout } from '../config';
 import HeadBase from '../components/HeadBase.astro';
 import { Image } from 'astro:assets';
 import NavBar from '../components/NavBar.astro';
@@ -34,18 +34,14 @@ const coverImage = getCoverImage();
           </div>
         )
       }
-      <div class="page-content">
-        <aside class="part-left">
-          <slot name="part-left" />
+      <div class:list={['page-content', 'aside-' + layout.basic.aside]}>
+        <aside class="part-right">
+          <slot name="aside" />
         </aside>
 
         <div class="part-center">
-          <slot name="part-center" />
+          <slot name="major" />
         </div>
-
-        <aside class="part-right">
-          <slot name="part-right" />
-        </aside>
       </div>
     </div>
   </body>
@@ -121,21 +117,21 @@ const coverImage = getCoverImage();
     display: flex;
     flex-direction: row;
     width: 100%;
-    padding: 1.5rem;
+    padding: 72px 128px;
     box-sizing: border-box;
     background-color: var(--background);
-    border: 1px solid var(--border);
     border-radius: 0.75rem;
     box-shadow: 0 -4px 6px -1px var(--shadow);
     margin-top: -@border-radius;
     z-index: 10;
 
-    padding-top: 72px;
+    &.aside-right {
+      flex-direction: row-reverse;
+    }
   }
 
   .part-left {
     flex: 0 0 20%;
-    padding-right: 1rem;
   }
 
   .part-center {
@@ -144,22 +140,26 @@ const coverImage = getCoverImage();
     align-items: stretch;
 
     flex: 1 1 60%;
-    max-width: 60%;
+    width: 0;
     padding: 0 1rem;
   }
 
   .part-right {
     flex: 0 0 20%;
-    padding-left: 1rem;
   }
 
   @media (max-width: 768px) {
     .page-content {
-      flex-direction: column;
+      padding-left: 0;
+      padding-right: 0;
     }
 
-    .sidebar-left,
-    .sidebar-right {
+    .part-center {
+      padding: 0;
+    }
+
+    .part-left,
+    .part-right {
       display: none;
     }
   }

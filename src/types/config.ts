@@ -1,49 +1,109 @@
 import { z } from 'astro/zod';
+import * as types from './config-types';
+import type { In, Out } from './config-types';
+export * from './config-types';
 
 // ----- Site Config -----
 
-export const zSiteConfig = z.object({
-  title: z.string(),
-  titleTemplate: z.string().optional(),
-  lang: z.string().default('en'),
+const builtinSites: Record<string, types.ExternalSite> = {
+  github: {
+    name: 'GitHub',
+    icon: 'mdi:github',
+  },
+  twitter: {
+    name: 'Twitter',
+    icon: 'mdi:twitter',
+  },
+  qq: {
+    name: 'QQ',
+    icon: 'mdi:penguin',
+  },
+  wechat: {
+    name: 'WeChat',
+    icon: 'mdi:wechat',
+  },
+};
 
-  defaultCover: z.any().optional(),
-  coverImageStyle: z
-    .enum(['static', 'parallax', 'half-parallax'])
-    .default('parallax'),
-});
+export const siteConfig = () =>
+  z.object({
+    title: z.string(),
+    titleTemplate: z.string().optional(),
+    lang: z.string().default('en'),
 
-export type SiteConfig = z.infer<typeof zSiteConfig>;
-export type SiteConfigInput = z.input<typeof zSiteConfig>;
+    defaultCover: z.any().optional(),
+    coverImageStyle: z
+      .enum(['static', 'parallax', 'half-parallax'])
+      .default('parallax'),
+
+    externalSites: z
+      .record(z.string(), types.externalSite())
+      .optional()
+      .transform((userSites) => ({
+        ...builtinSites,
+        ...userSites,
+      })),
+  });
+
+export type SiteConfigInput = In<typeof siteConfig>;
+export type SiteConfig = Out<typeof siteConfig>;
 export const defineSiteConfig = (config: SiteConfigInput): SiteConfig =>
-  zSiteConfig.parse(config);
+  siteConfig().parse(config);
 
 // ----- NavBar Config -----
 
-export const zNavBarConfig = z.object({
-  icon: z.string().optional(),
-  homeText: z.string().optional(),
-});
+export const navBarConfig = () =>
+  z.object({
+    icon: z.string().optional(),
+    homeText: z.string().optional(),
+  });
 
-export type NavBarConfig = z.infer<typeof zNavBarConfig>;
-export type NavBarConfigInput = z.input<typeof zNavBarConfig>;
+export type NavBarConfigInput = In<typeof navBarConfig>;
+export type NavBarConfig = Out<typeof navBarConfig>;
 
 export const defineNavBarConfig = (config: NavBarConfigInput): NavBarConfig =>
-  zNavBarConfig.parse(config);
+  navBarConfig().parse(config);
 
 // ----- Theme Config -----
 
-const zEcConfig = z.object({
-  themeDark: z.string().optional(),
-  themeLight: z.string().optional(),
-});
+export const themeConfig = () =>
+  z.object({
+    expressiveCode: types.expressiveCodeConfig().default({}),
+  });
 
-export const zThemeConfig = z.object({
-  expressiveCode: zEcConfig.default({}),
-});
-
-export type ThemeConfig = z.infer<typeof zThemeConfig>;
-export type ThemeConfigInput = z.input<typeof zThemeConfig>;
+export type ThemeConfigInput = In<typeof themeConfig>;
+export type ThemeConfig = Out<typeof themeConfig>;
 
 export const defineThemeConfig = (config: ThemeConfigInput): ThemeConfig =>
-  zThemeConfig.parse(config);
+  themeConfig().parse(config);
+
+// ----- Author Config -----
+
+export const authorConfig = () =>
+  z.object({
+    defaultAuthor: z.string().optional(),
+    defaultAvatarIcon: z.string().default('mdi:android'),
+    authors: z.record(z.string(), types.author()).default({}),
+  });
+
+export type AuthorConfigInput = In<typeof authorConfig>;
+export type AuthorConfig = Out<typeof authorConfig>;
+export const defineAuthorConfig = (config: AuthorConfigInput): AuthorConfig =>
+  authorConfig().parse(config);
+
+// ----- Layout Config -----
+
+export const layoutConfig = () => {
+  const zBasic = z.object({
+    aside: z.enum(['left', 'right']).default('left'),
+  });
+
+  return z.object({
+    basic: zBasic.optional().transform((x) => zBasic.parse(x ?? {})),
+  });
+};
+
+export type LayoutConfigInput = In<typeof layoutConfig>;
+export type LayoutConfig = Out<typeof layoutConfig>;
+
+export const defineLayoutConfig = (config: LayoutConfigInput): LayoutConfig =>
+  layoutConfig().parse(config);

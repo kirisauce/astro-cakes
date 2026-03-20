@@ -1,0 +1,89 @@
+---
+import type { JsxElement } from 'typescript';
+import { author as authorConfig, site as siteConfig } from '../../config';
+import CustomImage from '../CustomImage.astro';
+import Label from '../Label.astro';
+import Icon from '../Icon.astro';
+
+export interface Props {
+  authorId: string;
+}
+
+const { authorId } = Astro.props;
+
+const { avatar, name, bio, socialLinks } = authorConfig.authors[authorId] ?? {};
+---
+
+<div class="card author-card">
+  <Label style="font-size: 1.6rem; align-self: flex-start;">作者</Label>
+  <CustomImage src={avatar} alt="Author Avatar" class="avatar" />
+  <div class="name">{name}</div>
+  {bio && <div class="bio" set:html={bio} />}
+  <div class="links">
+    {
+      Object.entries(socialLinks).map(([site, link]) => {
+        const extSite = siteConfig.externalSites[site];
+        let icon: JsxElement;
+        if (extSite) {
+          icon = (
+            <CustomImage src={extSite.icon} alt={extSite.name} prefer="icon" />
+          );
+        } else {
+          icon = <Icon src="mdi:question-mark" alt="Unknown" />;
+        }
+        return <a class="link" href={link}>{icon}</a>;
+      })
+    }
+  </div>
+</div>
+
+<style lang="stylus">
+  .author-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .avatar {
+    width: 75%;
+    border-radius: 16px;
+    display: block;
+    margin-block: 16px;
+    aspect-ratio: 1;
+    object-fit: cover;
+  }
+
+  .name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    font-family: var(--font-monospace);
+  }
+
+  .bio {
+    font-size: 1.2rem;
+  }
+
+  .links {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    gap: 12px;
+    font-size: 32px;
+  }
+
+  .link {
+    color: var(--secondary);
+    border-radius: 8px;
+    background-color: var(--secondary-container);
+    display: flex;
+    flex-direction: row;
+    padding: 6px;
+    transition: background-color var(--expressive-slow-effects);
+
+    &:hover {
+      background-color: var(--primary-container);
+    }
+  }
+</style>

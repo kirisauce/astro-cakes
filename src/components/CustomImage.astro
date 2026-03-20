@@ -1,0 +1,39 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+
+export type Props = Omit<HTMLAttributes<'img'>, 'src' | 'alt'> & {
+  src: string | ImageMetadata | undefined | null;
+  alt: string;
+  prefer?: 'image' | 'icon';
+};
+
+const { src, alt, prefer = 'image', ...attrs } = Astro.props;
+---
+
+{
+  (() => {
+    const image = (inferSize: boolean = false) => (
+      <Image src={src} alt={alt} inferSize={inferSize} {...(attrs as any)} />
+    );
+    const rawImage = (src: string) => <img src={src} alt={alt} {...attrs} />;
+    const icon = (src: string) => <Icon src={src} {...(attrs as any)} />;
+
+    if (typeof src === 'object') {
+      if (src !== null) {
+        return image(false);
+      }
+    } else if (typeof src === 'string') {
+      if (src.startsWith('img|')) {
+        return image(true);
+      } else if (src.startsWith('rawimage|')) {
+        return rawImage(src.substring(9));
+      } else if (src.startsWith('icon|')) {
+        return icon(src.substring(5));
+      } else {
+        return prefer === 'icon' ? icon(src) : image();
+      }
+    }
+  })()
+}

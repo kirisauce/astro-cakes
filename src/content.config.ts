@@ -1,7 +1,6 @@
 import { glob } from "astro/loaders";
 import { z } from "astro/zod";
 import { defineCollection } from "astro:content";
-import path from 'path';
 
 // const image = () => z.url().transform((url) => {
 //   import.meta.glob(url, { base: path.resolve(__dirname, './assets') })
@@ -15,6 +14,7 @@ const blog = defineCollection({
     pubDate: z.coerce.date().optional(),
     updateDate: z.coerce.date().optional(),
     tags: z.array(z.string()).default([]),
+    author: z.string().optional(),
 
     coverImage: z.optional(image()),
   }),
