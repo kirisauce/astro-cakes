@@ -15,7 +15,7 @@ const { avatar, name, bio, socialLinks } = authorConfig.authors[authorId] ?? {};
 ---
 
 <div class="card author-card">
-  <Label style="font-size: 1.6rem; align-self: flex-start;">作者</Label>
+  <Label style="font-size: 1.6rem; align-self: flex-start; margin-left: -16px;">作者</Label>
   <CustomImage src={avatar} alt="Author Avatar" class="avatar" />
   <div class="name">{name}</div>
   {bio && <div class="bio" set:html={bio} />}
@@ -31,7 +31,7 @@ const { avatar, name, bio, socialLinks } = authorConfig.authors[authorId] ?? {};
         } else {
           icon = <Icon src="mdi:question-mark" alt="Unknown" />;
         }
-        return <a class="link" href={link}>{icon}</a>;
+        return <a class="link" href={link} target="_blank">{icon}</a>;
       })
     }
   </div>
@@ -45,7 +45,7 @@ const { avatar, name, bio, socialLinks } = authorConfig.authors[authorId] ?? {};
   }
 
   .avatar {
-    width: 75%;
+    width: 100%;
     border-radius: 16px;
     display: block;
     margin-block: 16px;

@@ -8,13 +8,13 @@ export type Props = HTMLAttributes<'div'> & {
 const { position = 'left', ...attrs } = Astro.props;
 ---
 
-<label class:list={[position]} {...attrs}>
+<div class:list={['label', position]} {...attrs}>
   <div class="decoration"></div>
   <div class="text"><slot /></div>
-</label>
+</div>
 
 <style lang="stylus">
-  label {
+  .label {
     display: flex;
     flex-direction: row;
 

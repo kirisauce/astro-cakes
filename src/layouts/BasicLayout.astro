@@ -35,11 +35,11 @@ const coverImage = getCoverImage();
         )
       }
       <div class:list={['page-content', 'aside-' + layout.basic.aside]}>
-        <aside class="part-right">
+        <aside class="aside">
           <slot name="aside" />
         </aside>
 
-        <div class="part-center">
+        <div class="major">
           <slot name="major" />
         </div>
       </div>
@@ -130,22 +130,18 @@ const coverImage = getCoverImage();
     }
   }
 
-  .part-left {
-    flex: 0 0 20%;
+  .aside {
+    flex: 1 1 10%;
   }
 
-  .part-center {
+  .major {
     display: flex;
     flex-direction: column;
     align-items: stretch;
 
-    flex: 1 1 60%;
+    flex: 3 1 50%;
     width: 0;
     padding: 0 1rem;
-  }
-
-  .part-right {
-    flex: 0 0 20%;
   }
 
   @media (max-width: 768px) {

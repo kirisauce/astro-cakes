@@ -1,9 +1,10 @@
 ---
 import MarkdownWrapper from './MarkdownWrapper.astro';
+import Icon from './Icon.astro';
+import Heimu from './Heimu.astro';
 
 import type { CollectionEntry } from 'astro:content';
 import { render } from 'astro:content';
-import Icon from './Icon.astro';
 import { formatInstant } from '../utils/format';
 
 export interface Props {
@@ -15,6 +16,10 @@ const { post } = Astro.props;
 const { title, updateDate, pubDate } = post.data;
 
 const { Content, headings } = await render(post);
+
+const customComponents = {
+  Heimu,
+};
 ---
 
 <div class="post-content">
@@ -37,7 +42,7 @@ const { Content, headings } = await render(post);
   }
   <hr />
   <MarkdownWrapper>
-    <Content />
+    <Content components={customComponents} />
   </MarkdownWrapper>
 </div>
 
