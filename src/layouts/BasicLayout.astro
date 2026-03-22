@@ -11,19 +11,18 @@ export interface Props {
 
 const { coverImage: pageCover, head } = Astro.props;
 
-const getCoverImage = () => {
+const coverImage = (() => {
   if (pageCover === undefined || pageCover === null) {
     return site.defaultCover;
   } else {
     return pageCover;
   }
-};
-const coverImage = getCoverImage();
+})();
 ---
 
 <html lang={site.lang}>
   <head>
-    <HeadBase  {...head} />
+    <HeadBase {...head} />
   </head>
   <body>
     <NavBar />

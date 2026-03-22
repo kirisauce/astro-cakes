@@ -1,0 +1,16 @@
+---
+import BasicLayout from './BasicLayout.astro';
+
+import { author, site } from '../config';
+import AuthorCard from '../components/Cards/AuthorCard.astro';
+---
+
+<BasicLayout coverImage={site.defaultCover}>
+  <Fragment slot="major">
+    <main class="card"></main>
+  </Fragment>
+
+  <Fragment slot="aside">
+    {author.defaultAuthor && <AuthorCard authorId={author.defaultAuthor} />}
+  </Fragment>
+</BasicLayout>
