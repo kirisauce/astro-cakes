@@ -2,40 +2,60 @@
 import BasicLayout from './BasicLayout.astro';
 import { getCollection } from 'astro:content';
 
-import { author, site } from '../config';
-import { getPostUpdateDateSync, blogurl } from '../utils/other';
+import { author, site, layout } from '../config';
+import {
+  getPostUpdateDateSync,
+  blogurl,
+  getPostPubDateSync,
+  getPostDescription,
+} from '../utils/other';
 import AuthorCard from '../components/Cards/AuthorCard.astro';
+import PostLinkCard from '../components/Cards/PostLinkCard.astro';
 
 const displayPosts = (await getCollection('blog'))
   .map((post) => ({
-    updated: getPostUpdateDateSync(post.data, post.filePath),
+    updateDate: getPostUpdateDateSync(post.data, post.filePath),
+    pubDate: getPostPubDateSync(post.data, post.filePath),
+    description: getPostDescription(post.data, post.body),
     post,
   }))
   .sort((a, b) => {
-    if (!a.updated || !b.updated) {
+    if (!a.updateDate || !b.updateDate) {
       return 0;
     }
-    return b.updated.getTime() - a.updated.getTime();
-  });
+    return b.updateDate.getTime() - a.updateDate.getTime();
+  })
+  .slice(0, layout.home.latestPostsLimit);
 ---
 
 <BasicLayout coverImage={site.defaultCover}>
   <Fragment slot="major">
-    <main transition:name="post-content-card" class="card">
+    <main transition:name="post-content-card" class="link-cards">
       {
-        displayPosts.map(({ updated, post }) => {
-          return (
-            <a href={blogurl.with(post.id)}>
-              {updated?.getTime()}&nbsp;{post.id}
-            </a>
-            <br />
-          );
+        displayPosts.map((args) => {
+          return <PostLinkCard {...args} />;
         })
       }
     </main>
   </Fragment>
 
   <Fragment slot="aside">
-    {author.defaultAuthor && <AuthorCard transition:name="author-card" authorId={author.defaultAuthor} />}
+    {
+      author.defaultAuthor && (
+        <AuthorCard
+          transition:name="author-card"
+          authorId={author.defaultAuthor}
+        />
+      )
+    }
   </Fragment>
 </BasicLayout>
+
+<style lang="stylus">
+  .link-cards {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+</style>

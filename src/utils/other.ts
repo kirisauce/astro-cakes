@@ -3,6 +3,8 @@ import fs from 'fs/promises';
 import fsSync from 'fs';
 import path from 'path/posix';
 
+const DESCRIPTION_MAX_LINES = 5;
+
 export const getPostPubDate = async (
   post: InferEntrySchema<'blog'>,
   filePath?: string,
@@ -57,6 +59,23 @@ export const getPostUpdateDateSync = (
   }
   const stat = fsSync.statSync(filePath);
   return stat.mtime;
+};
+
+export const getPostDescription = (
+  post: InferEntrySchema<'blog'>,
+  content?: string,
+): string | undefined => {
+  if (post.description !== undefined && post.description !== null) {
+    return post.description;
+  } else if (content) {
+    return content
+      .split('\n')
+      .filter((line) => line.trim() !== '')
+      .slice(0, DESCRIPTION_MAX_LINES)
+      .join('\n');
+  } else {
+    return undefined;
+  }
 };
 
 class UrlPrefixer {

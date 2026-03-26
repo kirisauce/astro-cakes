@@ -3,6 +3,9 @@ import * as types from './config-types';
 import type { In, Out } from './config-types';
 export * from './config-types';
 
+const optionalObject = <Obj extends z.ZodObject>(obj: Obj) =>
+  obj.optional().transform((x) => obj.parse(x ?? {}));
+
 // ----- Site Config -----
 
 const builtinSites: Record<string, types.ExternalSite> = {
@@ -69,7 +72,7 @@ export const defineNavBarConfig = (config: NavBarConfigInput): NavBarConfig =>
 export const themeConfig = () =>
   z.object({
     expressiveCode: types.expressiveCodeConfig().default({}),
-    defaultHue: z.number().min(0).max(359).default(0)
+    defaultHue: z.number().min(0).max(359).default(0),
   });
 
 export type ThemeConfigInput = In<typeof themeConfig>;
@@ -99,8 +102,13 @@ export const layoutConfig = () => {
     aside: z.enum(['left', 'right']).default('left'),
   });
 
+  const zHome = z.object({
+    latestPostsLimit: z.number().default(20),
+  });
+
   return z.object({
-    basic: zBasic.optional().transform((x) => zBasic.parse(x ?? {})),
+    basic: optionalObject(zBasic),
+    home: optionalObject(zHome),
   });
 };
 

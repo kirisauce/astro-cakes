@@ -1,0 +1,26 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import { formatInstant } from '../../utils/format';
+import Icon from '../Icon.astro';
+
+export interface Props extends HTMLAttributes<'time'> {
+  icon: string;
+  time?: Date;
+  formatter?: (date: Date) => string;
+}
+
+const { icon, time, formatter = formatInstant, ...other } = Astro.props;
+---
+
+{
+  time && (
+    <time class="meta" datetime={time.toISOString()} {...other}>
+      <Icon class="padded-icon-svg" src={icon} />
+      {formatter(time)}
+    </time>
+  )
+}
+
+<style lang="stylus">
+  @import './meta.styl';
+</style>

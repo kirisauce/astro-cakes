@@ -1,0 +1,24 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import Icon from '../Icon.astro';
+
+export interface Props extends HTMLAttributes<'div'> {
+  icon: string;
+  content: any;
+}
+
+const { icon, content, ...other } = Astro.props;
+---
+
+{
+  content && (
+    <div class="meta" {...other}>
+      <Icon src={icon} class="padded-icon-svg" />
+      {content}
+    </div>
+  )
+}
+
+<style lang="stylus">
+  @import './meta.styl';
+</style>

@@ -27,7 +27,7 @@ const customComponents = {
   {
     pubDate && (
       <time datetime={pubDate.toUTCString()} class="widget-with-icon">
-        <Icon src="mdi:calendar" />
+        <Icon src="mdi:calendar" class="padded-icon-svg" />
         {formatInstant(pubDate)}
       </time>
     )
@@ -35,7 +35,7 @@ const customComponents = {
   {
     updateDate && (
       <time datetime={updateDate.toUTCString()} class="widget-with-icon">
-        <Icon src="mdi:calendar-edit-outline" />
+        <Icon src="mdi:calendar-edit-outline" class="padded-icon-svg" />
         {formatInstant(updateDate)}
       </time>
     )
@@ -43,7 +43,7 @@ const customComponents = {
   {
     category && (
       <div class="widget-with-icon">
-        <Icon src="mdi:category-outline" />
+        <Icon src="mdi:category-outline" class="padded-icon-svg" />
         {category}
       </div>
     )
@@ -51,7 +51,7 @@ const customComponents = {
   {
     tags && (
       <div class="widget-with-icon">
-        <Icon src="mdi:tag-multiple-outline" />
+        <Icon src="mdi:tag-multiple-outline" class="padded-icon-svg" />
         {tags.map((tag) => {
           return <div class="tag">{tag}</div>;
         })}
@@ -78,13 +78,6 @@ const customComponents = {
     gap: 6px;
     color: var(--text);
     margin-inline-end: 16px;
-
-    :global(>svg) {
-      font-size: 24px;
-      background-color: var(--primary-container);
-      padding: 5px;
-      border-radius: 8px;
-    }
   }
 
   hr {

@@ -1,0 +1,31 @@
+---
+import Icon from '../Icon.astro';
+
+export interface Props {
+  icon?: string;
+  tags?: string[];
+}
+
+const { icon = 'mdi:tag-multiple-outline', tags } = Astro.props;
+---
+
+{
+  tags && (
+    <div class="meta">
+      <Icon class="padded-icon-svg" src={icon} />
+      {tags.map((tag) => (
+        <div class="tag">{tag}</div>
+      ))}
+    </div>
+  )
+}
+
+<style lang="stylus">
+  @import './meta.styl';
+
+  .tag {
+    background-color: var(--primary-container);
+    padding: 2px 4px;
+    border-radius: 6px;
+  }
+</style>

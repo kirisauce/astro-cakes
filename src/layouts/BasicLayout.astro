@@ -18,6 +18,8 @@ const coverImage = (() => {
     return pageCover;
   }
 })();
+
+const PAGE_ATTR = 'data-basic-layout-page';
 ---
 
 <html lang={site.lang}>
@@ -26,15 +28,21 @@ const coverImage = (() => {
   </head>
   <body>
     <NavBar transition:name="navbar" />
-    <div class="page">
+    <div class="page" {...{ [PAGE_ATTR]: '' }}>
       {
         coverImage && (
-          <div transition:name="cover-image" class:list={['cover-image', site.coverImageStyle]}>
+          <div
+            transition:name="cover-image"
+            class:list={['cover-image', site.coverImageStyle]}
+          >
             <Image src={coverImage} alt="Cover" />
           </div>
         )
       }
-      <div transition:name="page-content" class:list={['page-content', 'aside-' + layout.basic.aside]}>
+      <div
+        transition:name="page-content"
+        class:list={['page-content', 'aside-' + layout.basic.aside]}
+      >
         <aside class="aside">
           <slot name="aside" />
         </aside>
@@ -46,6 +54,39 @@ const coverImage = (() => {
     </div>
   </body>
 </html>
+
+<script define:vars={{ PAGE_ATTR }}>
+  let preservedScroll = 0.0;
+  let isOverScroll = false;
+  document.addEventListener('astro:before-swap', () => {
+    const el = document.querySelector(`[${PAGE_ATTR}]`);
+    if (!el) {
+      return;
+    }
+    preservedScroll = el.scrollTop;
+    const elCover = el.querySelector('.cover-image');
+    if (!elCover) {
+      return;
+    }
+    isOverScroll = preservedScroll > elCover.clientHeight;
+  });
+  document.addEventListener('astro:after-swap', () => {
+    const el = document.querySelector(`[${PAGE_ATTR}]`);
+    if (!el) {
+      return;
+    }
+    const elCover = el.querySelector('.cover-image');
+    if (!elCover) {
+      el.scrollTo(0, 0);
+      return;
+    }
+    if (isOverScroll) {
+      el.scrollTo(0, elCover.clientHeight * 0.75);
+    } else {
+      el.scrollTo(0, preservedScroll);
+    }
+  });
+</script>
 
 <style lang="stylus">
   body {
