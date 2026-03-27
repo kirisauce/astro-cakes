@@ -91,7 +91,7 @@
         border-radius: @border-radius;
         transition:
           background-color var(--expressive-default-effects),
-          transform var(--expressive-default-spital);
+          transform var(--expressive-default-spatial);
       }
 
       &.active {

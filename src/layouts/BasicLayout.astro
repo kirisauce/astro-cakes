@@ -3,6 +3,7 @@ import { site, layout } from '../config';
 import HeadBase from '../components/HeadBase.astro';
 import { Image } from 'astro:assets';
 import NavBar from '../components/NavBar.astro';
+import LoadingIndicator from '../components/LoadingIndicator.astro';
 
 export interface Props {
   coverImage?: ImageMetadata;
@@ -27,6 +28,7 @@ const PAGE_ATTR = 'data-basic-layout-page';
     <HeadBase {...head} />
   </head>
   <body>
+    <LoadingIndicator />
     <NavBar transition:name="navbar" />
     <div class="page" {...{ [PAGE_ATTR]: '' }}>
       {

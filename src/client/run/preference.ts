@@ -40,16 +40,19 @@ window.__PREFERENCES__ = {
 };
 
 ((prefs: PreferenceTable) => {
+  // Theme Color Hue Initialization
   {
-    const updateHtmlHue = (hue: number) => {
-      document.documentElement.style.setProperty('--color-hue', hue.toString());
+    const updateHtmlHue = () => {
+      document.documentElement.style.setProperty(
+        '--color-hue',
+        prefs.themeHue.value.toString(),
+      );
     };
 
-    prefs.themeHue.addEventListener('change', () => {
-      updateHtmlHue(prefs.themeHue.value);
-    });
+    prefs.themeHue.addEventListener('change', updateHtmlHue);
 
-    updateHtmlHue(prefs.themeHue.value);
+    updateHtmlHue();
+    document.addEventListener('astro:page-load', updateHtmlHue);
   }
 })(window.__PREFERENCES__);
 
