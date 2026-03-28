@@ -5,12 +5,12 @@ import { getCollection } from 'astro:content';
 import { author, site, layout } from '../config';
 import {
   getPostUpdateDateSync,
-  blogurl,
   getPostPubDateSync,
   getPostDescription,
 } from '../utils/other';
 import AuthorCard from '../components/Cards/AuthorCard.astro';
 import PostLinkCard from '../components/Cards/PostLinkCard.astro';
+import CategoriesCard from '../components/Cards/CategoriesCard.astro';
 
 const displayPosts = (await getCollection('blog'))
   .map((post) => ({
@@ -48,6 +48,7 @@ const displayPosts = (await getCollection('blog'))
         />
       )
     }
+    <CategoriesCard transition:name="categories-card" />
   </Fragment>
 </BasicLayout>
 

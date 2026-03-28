@@ -1,0 +1,171 @@
+---
+import BasicLayout from '../../layouts/BasicLayout.astro';
+import type { CollectionEntry } from 'astro:content';
+import { author, site } from '../../config';
+import {
+  getPostUpdateDateSync,
+  getPostPubDateSync,
+  getPostDescription,
+} from '../../utils/other';
+import AuthorCard from '../../components/Cards/AuthorCard.astro';
+import PostLinkCard from '../../components/Cards/PostLinkCard.astro';
+import CategoriesCard from '../../components/Cards/CategoriesCard.astro';
+import {
+  CategoryMap,
+  categoryMap,
+  joinCategoryPath,
+} from '../../utils/page-indices';
+import { baseurl, categoryurl } from '../../utils/url';
+
+export interface Props {
+  path: string[];
+  node: CategoryMap<CollectionEntry<'blog'>>;
+}
+
+export async function getStaticPaths() {
+  // 递归收集所有分类路径
+  const collectAllPaths = (
+    map: typeof categoryMap,
+    currentPath: string[] = [],
+  ): Array<{
+    path: string[];
+    node: CategoryMap<CollectionEntry<'blog'>>;
+  }> => {
+    if (!map.submap || map.submap.size == 0) {
+      return [];
+    }
+
+    const result: ReturnType<typeof collectAllPaths> = [];
+
+    for (const [key, subMap] of map.submap.entries()) {
+      const newPath = [...currentPath, key];
+      // 添加当前路径
+      result.push({
+        path: newPath,
+        node: subMap,
+      });
+      // 递归添加子路径
+      result.push(...collectAllPaths(subMap, newPath));
+    }
+
+    return result;
+  };
+
+  const allPaths = collectAllPaths(categoryMap);
+
+  return allPaths.map(({ path, node }) => ({
+    params: { category: joinCategoryPath(path) },
+    props: { path, node } satisfies Props,
+  }));
+}
+
+const { path, node } = Astro.props;
+
+type FilteredPost = {
+  updateDate?: Date;
+  pubDate?: Date;
+  description?: string;
+  post: CollectionEntry<'blog'>;
+};
+
+const filteredPosts = node
+  .collectValues()
+  .map((post) => ({
+    updateDate: getPostUpdateDateSync(post.data, post.filePath),
+    pubDate: getPostPubDateSync(post.data, post.filePath),
+    description: getPostDescription(post.data, post.body),
+    post,
+  }))
+  .sort((a, b) => {
+    if (!a.updateDate || !b.updateDate) {
+      return 0;
+    }
+    return b.updateDate.getTime() - a.updateDate.getTime();
+  });
+---
+
+<BasicLayout coverImage={site.defaultCover}>
+  <Fragment slot="major">
+    <main transition:name="post-content-card" class="link-cards">
+      <!-- 面包屑导航 -->
+      <h1 class="breadcrumb">
+        <a href={baseurl.with('.')}>分类</a>: {
+          (() => {
+            const base: string[] = [];
+            return path.map((p, index) => {
+              base.push(p);
+              return (
+                <>
+                  {index !== 0 ? '>' : null}
+                  <a href={categoryurl.with(joinCategoryPath(base))}>{p}</a>
+                </>
+              );
+            });
+          })()
+        }
+      </h1>
+
+      <p>共找到 {filteredPosts.length} 篇相关文章</p>
+
+      {
+        filteredPosts.length > 0 ? (
+          filteredPosts.map((args: FilteredPost) => {
+            return <PostLinkCard {...args} />;
+          })
+        ) : (
+          <p>什么都没有~</p>
+        )
+      }
+    </main>
+  </Fragment>
+
+  <Fragment slot="aside">
+    {
+      author.defaultAuthor && (
+        <AuthorCard
+          transition:name="author-card"
+          authorId={author.defaultAuthor}
+        />
+      )
+    }
+    {
+      node.submap && node.submap.size > 0 && (
+        <CategoriesCard path={path} transition:name="categories-card" />
+      )
+    }
+  </Fragment>
+</BasicLayout>
+
+<style lang="stylus">
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    margin-bottom: 0;
+
+    a {
+      color: var(--text-muted);
+      text-decoration: none;
+      
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .link-cards {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+
+    p {
+      margin-bottom: 1.5em;
+      color: var(--text-light);
+    }
+  }
+</style>

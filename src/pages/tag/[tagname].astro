@@ -21,7 +21,7 @@ export interface Props {
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
   
-  return tagMap.keys().map((tag) => ({
+  return Array.from(tagMap.keys()).map((tag) => ({
     params: { tagname: tag },
     props: { tag, posts },
   }));

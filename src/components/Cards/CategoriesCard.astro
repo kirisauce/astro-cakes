@@ -1,29 +1,33 @@
 ---
+import { categoryMap, joinCategoryPath } from '../../utils/page-indices';
 import { categoryurl } from '../../utils/url';
 import Label from '../Label.astro';
 
-export interface DisplayCategory {
-  name: string;
-  count: number;
-}
-
 export interface Props {
-  categories: DisplayCategory[];
+  path?: string[];
 }
 
-const { categories, ...other } = Astro.props;
+const { path = [], ...other } = Astro.props;
+const node = categoryMap.index(path);
 ---
 
 <div class="card categories-card" {...other}>
   <Label style="font-size: 1.6rem; align-self: flex-start; margin-left: -16px;"
-    >分类</Label
+    >{path.length > 0 ? '子分类' : '分类'}</Label
   >
   <div class="categories-list">
     {
-      categories.map((category) => (
-        <a href={categoryurl.with(category.name)} class="category-item">
-          <span class="category-name">{category.name}</span>
-          <span class="category-count">{category.count}</span>
+      node?.submap?.entries().map(([subcategoryName, subcategory]) => (
+        <a
+          href={categoryurl.with(
+            joinCategoryPath(path.concat([subcategoryName])),
+          )}
+          class="category-item"
+        >
+          <span class="category-name">{subcategoryName}</span>
+          <span class="category-count">
+            {subcategory.collectValues().length}
+          </span>
         </a>
       ))
     }
