@@ -3,6 +3,8 @@ import * as cfg from './types/config';
 export const site = cfg.defineSiteConfig({
   title: "kirisauce's blog",
   titleTemplate: "kirisauce's blog",
+
+  coverImageStyle: 'half-parallax',
 });
 
 export const navbar = cfg.defineNavBarConfig({

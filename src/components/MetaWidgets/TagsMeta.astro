@@ -23,9 +23,14 @@ const { icon = 'mdi:tag-multiple-outline', tags } = Astro.props;
 <style lang="stylus">
   @import './meta.styl';
 
+  .meta {
+    flex-wrap: wrap;
+  }
+
   .tag {
     background-color: var(--primary-container);
     padding: 2px 4px;
     border-radius: 6px;
+    text-wrap: nowrap;
   }
 </style>

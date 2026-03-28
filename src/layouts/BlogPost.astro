@@ -5,6 +5,7 @@ import BasicLayout from './BasicLayout.astro';
 
 import type { CollectionEntry } from 'astro:content';
 import { author as authorConfig } from '../config';
+import { dropdown } from '../utils/transition';
 
 export type Props = {
   post: CollectionEntry<'blog'>;
@@ -26,7 +27,10 @@ const layoutProps = {
 
 <BasicLayout {...layoutProps}>
   <Fragment slot="major">
-    <main transition:name="post-content-card" class="card article-content-card">
+    <main
+      transition:animate={dropdown()}
+      class="card article-content-card"
+    >
       <PostContent post={Astro.props.post} />
     </main>
   </Fragment>

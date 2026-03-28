@@ -9,12 +9,12 @@ export interface Props {
   authorId: string;
 }
 
-const { authorId } = Astro.props;
+const { authorId, ...other } = Astro.props;
 
 const { avatar, name, bio, socialLinks } = authorConfig.authors[authorId] ?? {};
 ---
 
-<div class="card author-card">
+<div class="card author-card" {...other}>
   <Label style="font-size: 1.6rem; align-self: flex-start; margin-left: -16px;">作者</Label>
   <CustomImage src={avatar} alt="Author Avatar" class="avatar" />
   <div class="name">{name}</div>

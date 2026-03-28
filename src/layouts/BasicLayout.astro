@@ -42,8 +42,8 @@ const PAGE_ATTR = 'data-basic-layout-page';
         )
       }
       <div
-        transition:name="page-content"
         class:list={['page-content', 'aside-' + layout.basic.aside]}
+        transition:name="page-content"
       >
         <aside class="aside">
           <slot name="aside" />
@@ -200,5 +200,19 @@ const PAGE_ATTR = 'data-basic-layout-page';
     .aside {
       display: none;
     }
+  }
+</style>
+
+<style is:global>
+  ::view-transition-group(root) {
+    z-index: -1000;
+  }
+
+  ::view-transition-group(page-content) {
+    z-index: -50;
+  }
+
+  ::view-transition-group(cover-image) {
+    z-index: -100;
   }
 </style>
