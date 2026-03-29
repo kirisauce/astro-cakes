@@ -16,7 +16,7 @@ export interface TogglePreset {
 }
 
 namespace genpreset {
-  export const dropdown = (opts: CustomAnimation) => ({
+  export const dropdown = (opts: CustomAnimation): TogglePreset => ({
     enter: {
       keyframes: [
         { opacity: 0, transform: 'translateY(-40%) scale(0.5)' },
@@ -28,6 +28,26 @@ namespace genpreset {
       keyframes: [
         { opacity: 1, transform: 'translateY(0) scale(1.0)' },
         { opacity: 0, transform: 'translateY(-60%) scale(0.65)' },
+      ],
+      options: { ...opts },
+    },
+  });
+
+  export const slide = (
+    distance: string,
+    opts: CustomAnimation,
+  ): TogglePreset => ({
+    enter: {
+      keyframes: [
+        { opacity: 0, transform: `translate(${distance})` },
+        { opacity: 1, transform: `translate(0, 0)` },
+      ],
+      options: { ...opts },
+    },
+    exit: {
+      keyframes: [
+        { opacity: 1, transform: `translate(0, 0)` },
+        { opacity: 0, transform: `translate(${distance})` },
       ],
       options: { ...opts },
     },
@@ -48,6 +68,8 @@ export const PRESETS: Record<string, TogglePreset> = {
 
   dropdown: genpreset.dropdown(m3anim.expressiveDefaultEffects),
   'dropdown-fast': genpreset.dropdown(m3anim.expressiveFastEffects),
+
+  'slide-down': genpreset.slide('0, -60%', m3anim.expressiveDefaultEffects),
 } as const;
 
 export interface AutoCloseHandler {

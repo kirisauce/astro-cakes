@@ -34,8 +34,8 @@ const PAGE_ATTR = 'data-basic-layout-page';
   </head>
   <body>
     <LoadingIndicator />
-    <NavBar transition:name="navbar" />
-    <div class="page" {...{ [PAGE_ATTR]: '' }}>
+    <NavBar transition:name="navbar" id="navbar" data-toggle-preset="slide-down" />
+    <div class="page" id="page" {...{ [PAGE_ATTR]: '' }}>
       {
         coverImage && (
           <div
@@ -60,11 +60,14 @@ const PAGE_ATTR = 'data-basic-layout-page';
   </body>
 </html>
 
-<script define:vars={{ PAGE_ATTR }}>
+<script>
+  /**
+   * This script block is used to preserve scroll position when navigating between pages.
+   */
   let preservedScroll = 0.0;
   let isOverScroll = false;
   document.addEventListener('astro:before-swap', () => {
-    const el = document.querySelector(`[${PAGE_ATTR}]`);
+    const el = document.querySelector(`#page`);
     if (!el) {
       return;
     }
@@ -77,7 +80,7 @@ const PAGE_ATTR = 'data-basic-layout-page';
     isOverScroll = preservedScroll > elCover.clientHeight;
   });
   document.addEventListener('astro:page-load', () => {
-    const el = document.querySelector(`[${PAGE_ATTR}]`);
+    const el = document.querySelector(`#page`);
     if (!el) {
       return;
     }
@@ -91,6 +94,43 @@ const PAGE_ATTR = 'data-basic-layout-page';
     } else {
       el.scrollTo(0, preservedScroll);
     }
+  });
+</script>
+
+<script>
+  /**
+   * This script block monitors for the page scrolling, and hides
+   * the navigation bar when the user scrolls down.
+   */
+
+  import { toggle } from '../client/toggler';
+
+  document.addEventListener('astro:page-load', () => {
+    const elNav = document.querySelector('#navbar') as HTMLElement | null;
+    const el = document.querySelector('#page');
+    if (!el || !elNav) {
+      return;
+    }
+
+    let oldScroll = el.scrollTop;
+    let accScroll = 0;
+    const listener = (e: Event) => {
+      const newScroll = el.scrollTop;
+      const delta = newScroll - oldScroll;
+
+      if (delta < 0 && accScroll < 0) {
+        accScroll = 0;
+        toggle(elNav);
+      } else if (accScroll > 50) {
+        accScroll = -1;
+        toggle(elNav);
+      } else if (accScroll >= 0 && delta > 0) {
+        accScroll += delta;
+      }
+
+      oldScroll = newScroll;
+    };
+    el.addEventListener('scroll', listener);
   });
 </script>
 
