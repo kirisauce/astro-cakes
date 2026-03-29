@@ -4,6 +4,7 @@ import HeadBase from '../components/HeadBase.astro';
 import { Image } from 'astro:assets';
 import NavBar from '../components/NavBar.astro';
 import LoadingIndicator from '../components/LoadingIndicator.astro';
+import { fade } from 'astro:transitions';
 
 export interface Props {
   coverImage?: ImageMetadata;
@@ -23,7 +24,11 @@ const coverImage = (() => {
 const PAGE_ATTR = 'data-basic-layout-page';
 ---
 
-<html lang={site.lang}>
+<html
+  lang={site.lang}
+  transition:animate={fade({ duration: '500ms' })}
+  transition:name="basic-layout-html"
+>
   <head>
     <HeadBase {...head} />
   </head>
@@ -34,6 +39,7 @@ const PAGE_ATTR = 'data-basic-layout-page';
       {
         coverImage && (
           <div
+            data-transite-from-cover
             transition:name="cover-image"
             class:list={['cover-image', site.coverImageStyle]}
           >
@@ -41,10 +47,7 @@ const PAGE_ATTR = 'data-basic-layout-page';
           </div>
         )
       }
-      <div
-        class:list={['page-content', 'aside-' + layout.basic.aside]}
-        transition:name="page-content"
-      >
+      <div class:list={['page-content', 'aside-' + layout.basic.aside]}>
         <aside class="aside">
           <slot name="aside" />
         </aside>
@@ -72,7 +75,7 @@ const PAGE_ATTR = 'data-basic-layout-page';
     }
     isOverScroll = preservedScroll > elCover.clientHeight;
   });
-  document.addEventListener('astro:after-swap', () => {
+  document.addEventListener('astro:page-load', () => {
     const el = document.querySelector(`[${PAGE_ATTR}]`);
     if (!el) {
       return;
@@ -160,12 +163,9 @@ const PAGE_ATTR = 'data-basic-layout-page';
     display: flex;
     flex-direction: row;
     width: 100%;
-    padding: 72px 128px;
+    padding: 72px 15%;
     box-sizing: border-box;
     background-color: var(--background);
-    border-radius: 0.75rem;
-    box-shadow: 0 -4px 6px -1px var(--shadow);
-    margin-top: -@border-radius;
     z-index: 10;
 
     &.aside-right {
@@ -200,19 +200,5 @@ const PAGE_ATTR = 'data-basic-layout-page';
     .aside {
       display: none;
     }
-  }
-</style>
-
-<style is:global>
-  ::view-transition-group(root) {
-    z-index: -1000;
-  }
-
-  ::view-transition-group(page-content) {
-    z-index: -50;
-  }
-
-  ::view-transition-group(cover-image) {
-    z-index: -100;
   }
 </style>

@@ -23,7 +23,7 @@ const customComponents = {
 ---
 
 <div class="post-content">
-  <h1 class="article-title">{title}</h1>
+  <h1 data-transite-from-title class="article-title">{title}</h1>
   {
     pubDate && (
       <time datetime={pubDate.toUTCString()} class="widget-with-icon">

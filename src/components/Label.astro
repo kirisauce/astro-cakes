@@ -1,14 +1,28 @@
 ---
+import { flattenClassList } from '../utils/other';
 import type { HTMLAttributes } from 'astro/types';
 
 export type Props = HTMLAttributes<'div'> & {
   position?: 'left' | 'right';
 };
 
-const { position = 'left', ...attrs } = Astro.props;
+const {
+  position = 'left',
+  'class:list': klassList,
+  class: klass,
+  ...attrs
+} = Astro.props;
 ---
 
-<div class:list={['label', position]} {...attrs}>
+<div
+  class:list={[
+    'label',
+    position,
+    ...flattenClassList(klassList),
+    ...flattenClassList(klass),
+  ]}
+  {...attrs}
+>
   <div class="decoration"></div>
   <div class="text"><slot /></div>
 </div>

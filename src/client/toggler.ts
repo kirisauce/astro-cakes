@@ -1,4 +1,5 @@
 import { m3anim, type Animation as CustomAnimation } from '../utils/consts';
+import { generateId } from '../utils/other';
 
 const STATE_KEY = 'data-toggler-state';
 const ANIM_ID_KEY = 'data-toggler-anim-id';
@@ -48,11 +49,6 @@ export const PRESETS: Record<string, TogglePreset> = {
   dropdown: genpreset.dropdown(m3anim.expressiveDefaultEffects),
   'dropdown-fast': genpreset.dropdown(m3anim.expressiveFastEffects),
 } as const;
-
-const generateId = () =>
-  Math.random()
-    .toString(36)
-    .slice(2, 2 + 8);
 
 export interface AutoCloseHandler {
   eventHandler: any;

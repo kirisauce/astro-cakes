@@ -26,3 +26,34 @@ code
   100%
     transform: translate(0, 64px)
     opacity: 0
+
+::view-transition-group(*)
+  animation-duration: 500ms
+  z-index: 2000
+
+::view-transition-group(clicked-title)
+  z-index: 2001
+
+::view-transition-old(clicked-title)
+  height: 100%;
+  width: auto;
+
+.cover-image::view-transition-old(clicked-cover)
+  height: 100%
+
+::view-transition-old(clicked-cover),
+::view-transition-new(clicked-cover)
+  height: 100%
+
+::view-transition-group(clicked-cover)
+  z-index: 100
+
+::view-transition-group(root),
+::view-transition-group(basic-layout-html)
+  z-index: -1000
+
+::view-transition-group(page-content)
+  z-index: -100
+
+::view-transition-group(home-links)
+  z-index: -100

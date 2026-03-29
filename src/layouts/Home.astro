@@ -33,7 +33,7 @@ const displayPosts = (await getCollection('blog'))
 
 <BasicLayout coverImage={site.defaultCover}>
   <Fragment slot="major">
-    <main transition:animate={dropdown()} class="link-cards">
+    <main transition:animate={dropdown()} transition:name="home-links" class="link-cards">
       {
         displayPosts.map((args) => {
           return <PostLinkCard {...args} />;

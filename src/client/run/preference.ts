@@ -97,7 +97,7 @@ window.__CAKES__ = {
       });
     });
 
-    const initDocumentClass = () => {
+    const initDocumentClass = (doc: HTMLElement) => {
       // First-time initialization
       doc.classList.add(c.colorScheme.value);
       const dataTheme = getEcTheme(c.colorScheme.value);
@@ -105,7 +105,9 @@ window.__CAKES__ = {
         doc.setAttribute('data-theme', dataTheme);
       }
     };
-    initDocumentClass();
-    document.addEventListener('astro:page-load', initDocumentClass);
+    initDocumentClass(document.documentElement);
+    document.addEventListener('astro:before-swap', (event) => {
+      initDocumentClass(event.newDocument.documentElement);
+    });
   }
 })(window.__CAKES__);

@@ -1,7 +1,9 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import { blogurl } from '../../utils/url';
+import { generateId } from '../../utils/other';
 import { Image } from 'astro:assets';
+import { layout } from '../../config';
 import Label from '../Label.astro';
 import Meta from '../MetaWidgets/Meta.astro';
 import TimeMeta from '../MetaWidgets/TimeMeta.astro';
@@ -12,15 +14,31 @@ export interface Props {
   updateDate?: Date;
   pubDate?: Date;
   description?: string;
+
+  coverPosition?: 'left' | 'right';
 }
 
-const { post, updateDate, pubDate, description } = Astro.props;
+const config = layout.component.PostLinkCard;
+
+const {
+  post,
+  updateDate,
+  pubDate,
+  description,
+  coverPosition = config.coverPosition,
+} = Astro.props;
 const { category, tags } = post.data;
+
+const uniqueId = generateId();
 ---
 
-<a href={blogurl.with(post.id)} class="card link-card">
+<a
+  href={blogurl.with(post.id)}
+  class:list={['card', 'link-card', `cover-at-${coverPosition}`]}
+  data-unique-id={uniqueId}
+>
   <div class="content">
-    <Label style="font-size:28px;">{post.data.title}</Label>
+    <Label class="title" style="font-size:28px;">{post.data.title}</Label>
     <div class="metas">
       <TimeMeta icon="mdi:calendar-edit-outline" time={updateDate} />
       <TimeMeta icon="mdi:calendar-outline" time={pubDate} />
@@ -41,6 +59,116 @@ const { category, tags } = post.data;
   </div>
 </a>
 
+<script>
+  let clickedCardUid: string | null = null;
+  const transitionParts = ['cover', 'title'];
+
+  const restoreAfterTransition = new Map<HTMLElement, string>();
+  const setRestore = (element: HTMLElement, value: string) => {
+    if (!restoreAfterTransition.has(element)) {
+      restoreAfterTransition.set(element, element.style.transform);
+    }
+  };
+  const restore = () => {
+    for (const [restoreElement, value] of restoreAfterTransition.entries()) {
+      restoreElement.style.viewTransitionName = value;
+    }
+    restoreAfterTransition.clear();
+  };
+
+  document.addEventListener('click', (e) => {
+    let el = (e.target as Element).closest('.card.link-card');
+    if (!el) {
+      return;
+    }
+    restoreAfterTransition.clear();
+
+    for (const part of transitionParts) {
+      const elPart = el.querySelector(`.${part}`) as HTMLElement | null;
+      if (!elPart) {
+        continue;
+      }
+
+      setRestore(elPart, elPart.style.viewTransitionName);
+      elPart.style.viewTransitionName = `clicked-${part}`;
+    }
+    clickedCardUid = el.getAttribute('data-unique-id');
+  });
+
+  document.addEventListener('astro:after-preparation', () => {
+    if (clickedCardUid) {
+    } else {
+      for (const part of transitionParts) {
+        const transiteFrom = document.querySelector(
+          `[data-transite-from-${part}]`,
+        ) as HTMLElement | null;
+        if (!transiteFrom) {
+          return;
+        }
+
+        const transiteId = transiteFrom.getAttribute(
+          `data-transite-from-${part}`,
+        );
+        if (!transiteId) {
+          return;
+        }
+
+        setRestore(transiteFrom, transiteFrom.style.viewTransitionName);
+        transiteFrom.style.viewTransitionName = `clicked-${part}`;
+      }
+    }
+  });
+
+  document.addEventListener('astro:before-swap', (e) => {
+    if (clickedCardUid) {
+      for (const part of transitionParts) {
+        const transiteTo = e.newDocument.querySelector(
+          `[data-transite-from-${part}]`,
+        ) as HTMLElement | null;
+        if (!transiteTo) {
+          return;
+        }
+
+        // Save status
+        transiteTo.setAttribute(`data-transite-from-${part}`, clickedCardUid);
+
+        // Set view transition name for new cover element
+        setRestore(transiteTo, transiteTo.style.viewTransitionName);
+        transiteTo.style.viewTransitionName = `clicked-${part}`;
+      }
+
+      e.viewTransition.finished.then(restore);
+
+      clickedCardUid = null;
+    } else {
+      // Exit from inner page
+      for (const part of transitionParts) {
+        const transiteFrom = document.querySelector(
+          `[data-transite-from-${part}]`,
+        ) as HTMLElement | null;
+        if (!transiteFrom) {
+          return;
+        }
+
+        const transiteId = transiteFrom.getAttribute(
+          `data-transite-from-${part}`,
+        );
+        const transiteTo = e.newDocument.querySelector(
+          `.card.link-card[data-unique-id="${transiteId}"] .${part}`,
+        ) as HTMLElement | null;
+        if (!transiteTo) {
+          return;
+        }
+
+        setRestore(transiteTo, transiteTo.style.viewTransitionName);
+        transiteTo.style.viewTransitionName = `clicked-${part}`;
+
+        e.viewTransition.finished.then(restore);
+      }
+    }
+  });
+</script>
+
 <style lang="stylus">
   .link-card {
     display: flex;
@@ -50,6 +178,10 @@ const { category, tags } = post.data;
     color: var(--text);
     font-family: var(--font-sans);
     gap: 16px;
+
+    &.cover-at-left {
+      flex-direction: row-reverse;
+    }
   }
 
   .content {

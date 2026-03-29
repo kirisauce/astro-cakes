@@ -55,16 +55,16 @@
       setWidth(60);
     });
     document.addEventListener('astro:after-preparation', () => {
-      setWidth(80);
+      setWidth(100);
       setOpacity(0.5);
     });
     document.addEventListener('astro:before-swap', () => {
-      setWidth(100);
+      anim?.cancel();
+      anim = undefined;
     });
     document.addEventListener('astro:after-swap', () => {
-      if (anim) {
-        anim.cancel();
-      }
+      anim?.cancel();
+      anim = undefined;
     });
   };
   window.addEventListener(

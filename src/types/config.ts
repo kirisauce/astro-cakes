@@ -106,9 +106,20 @@ export const layoutConfig = () => {
     latestPostsLimit: z.number().default(20),
   });
 
+  const zComponentSub = {
+    PostLinkCard: z.object({
+      coverPosition: z.enum(['left', 'right']).default('right'),
+    }),
+  };
+
+  const zComponent = z.object({
+    PostLinkCard: optionalObject(zComponentSub.PostLinkCard),
+  });
+
   return z.object({
     basic: optionalObject(zBasic),
     home: optionalObject(zHome),
+    component: optionalObject(zComponent),
   });
 };
 

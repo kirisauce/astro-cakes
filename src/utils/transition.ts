@@ -5,14 +5,12 @@ const __dropdown = {
   new: {
     name: 'dropdown',
     direction: 'reverse',
-    delay: '600ms',
-    ...m3anim.expressiveFastSpatial,
-    easing: 'ease-out',
+    delay: '200ms',
+    ...m3anim.expressiveDefaultEffects,
   },
   old: {
     name: 'dropdown',
-    ...m3anim.expressiveFastSpatial,
-    easing: 'ease-out',
+    ...m3anim.expressiveDefaultEffects,
   },
 };
 
