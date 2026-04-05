@@ -9,6 +9,7 @@ import type { CollectionEntry } from 'astro:content';
 import type { JsxElement } from 'typescript';
 import { AstroError } from 'astro/errors';
 import { ClientRouter } from 'astro:transitions';
+import BlockingBundledScript from './BlockingBundledScript.astro';
 
 export interface Props {
   titleText?: string;
@@ -39,14 +40,14 @@ const {
 <ClientRouter />
 
 <!-- Font  -->
-<Font cssVariable="--font-monospace" preload />
+<Font cssVariable="--font-monospace" />
 
 <script define:vars={{ theme }}>
   window.__CONFIG__ = {
     theme,
   };
 </script>
-<script src="../client/run/preference.ts"></script>
+<BlockingBundledScript src="/client/run/preference.ts"></script>
 <script src="../client/run/utils.ts"></script>
 
 <title>
