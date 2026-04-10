@@ -1,6 +1,6 @@
 import type { CollectionEntry, InferEntrySchema } from 'astro:content';
-import fs from 'fs/promises';
-import fsSync from 'fs';
+import fs from 'node:fs/promises';
+import fsSync from 'node:fs';
 import type { HTMLAttributes } from 'astro/types';
 
 const DESCRIPTION_MAX_LINES = 5;

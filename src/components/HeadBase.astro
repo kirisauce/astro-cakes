@@ -9,7 +9,6 @@ import type { CollectionEntry } from 'astro:content';
 import type { JsxElement } from 'typescript';
 import { AstroError } from 'astro/errors';
 import { ClientRouter } from 'astro:transitions';
-import BlockingBundledScript from './BlockingBundledScript.astro';
 
 export interface Props {
   titleText?: string;
@@ -47,8 +46,11 @@ const {
     theme,
   };
 </script>
-<BlockingBundledScript src="/client/run/preference.ts"></script>
-<script src="../client/run/utils.ts"></script>
+<!-- @patch async_script -->
+<script>
+  import '../client/run/preference.ts?inline';
+  import '../client/run/utils.ts?inline';
+</script>
 
 <title>
   {titleText}{site.titleTemplate ? ` | ${site.titleTemplate}` : ''}
