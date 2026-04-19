@@ -31,3 +31,19 @@ export const externalSite = () =>
 
 export type ExternalSiteInput = In<typeof externalSite>;
 export type ExternalSite = Out<typeof externalSite>;
+
+export const cssLength = (defaultValue?: string | number) =>
+  z
+    .number()
+    .or(z.string())
+    .optional()
+    .transform((v) =>
+      typeof v === 'number'
+        ? `${v}px`
+        : typeof v === 'string'
+          ? v
+          : defaultValue,
+    );
+
+export type CssLengthInput = In<typeof cssLength>;
+export type CssLength = Out<typeof cssLength>;

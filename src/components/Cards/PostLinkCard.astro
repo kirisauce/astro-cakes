@@ -4,6 +4,7 @@ import { blogurl } from '../../utils/url';
 import { generateId } from '../../utils/other';
 import { Image } from 'astro:assets';
 import { layout } from '../../config';
+import stylus from 'stylus';
 import Label from '../Label.astro';
 import Meta from '../MetaWidgets/Meta.astro';
 import TimeMeta from '../MetaWidgets/TimeMeta.astro';
@@ -18,18 +19,81 @@ export interface Props {
   coverPosition?: 'left' | 'right';
 }
 
-const config = layout.component.PostLinkCard;
+const {
+  slideLayerInitialWidth,
+  slideLayerInitialPadding,
+  slideLayerPosition,
+  coverPosition: coverPositionDefault,
+} = layout.component.PostLinkCard;
 
 const {
   post,
   updateDate,
   pubDate,
   description,
-  coverPosition = config.coverPosition,
+  coverPosition = coverPositionDefault,
 } = Astro.props;
 const { category, tags } = post.data;
 
 const uniqueId = generateId();
+
+const slideLayerCss =
+  slideLayerPosition !== 'none' &&
+  stylus.render(`
+  .card.link-card {
+    transition: padding-${slideLayerPosition} var(--expressive-fast-spatial);
+    background-color: transparent;
+    ${
+      slideLayerInitialPadding &&
+      `padding-${slideLayerPosition}: ${slideLayerInitialPadding};`
+    }
+
+    &:hover {
+      padding-${slideLayerPosition}: 60px;
+
+      &::after {
+        ${slideLayerPosition}: 28px;
+      }
+    }
+
+    &::before {
+      content: '${slideLayerPosition === 'left' ? '<' : '>'}';
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      bottom: 0;
+      background-color: var(--secondary);
+      border-radius: 16px;
+      z-index: -10;
+      opacity: 0.75;
+      font-weight: 800;
+      font-size: 20px;
+
+      display: flex;
+      flex-direction: ${slideLayerPosition === 'left' ? 'row' : 'row-reverse'};
+      align-items: center;
+      padding-${slideLayerPosition}: 8px;
+      font-family: var(--font-monospace);
+      color: var(--text);
+    }
+
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      ${slideLayerPosition}: ${slideLayerInitialWidth};
+      bottom: 0;
+      background-color: var(--secondary-container);
+      border-radius: 14px;
+      z-index: -5;
+      transition: ${slideLayerPosition} var(--expressive-fast-spatial);
+    }
+  }
+`);
 ---
 
 <a
@@ -170,7 +234,7 @@ const uniqueId = generateId();
 </script>
 
 <style lang="stylus">
-  .link-card {
+  .card.link-card {
     display: flex;
     flex-direction: row;
     height: 200px;
@@ -178,6 +242,7 @@ const uniqueId = generateId();
     color: var(--text);
     font-family: var(--font-sans);
     gap: 16px;
+    position: relative;
 
     &:where(.cover-at-left) {
       flex-direction: row-reverse;
@@ -240,3 +305,5 @@ const uniqueId = generateId();
     }
   }
 </style>
+
+{slideLayerPosition && <style is:inline set:html={slideLayerCss} />}
