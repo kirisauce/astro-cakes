@@ -76,6 +76,11 @@ export const dynamicStyle: () => Plugin = () => {
         const jiti = createJiti(resolvedPath);
         let module: any;
         if (this.environment.mode === 'dev') {
+          const mod = server.moduleGraph.getModuleById(resolvedPath);
+          if (mod) {
+            // Invalidate the old module so that we can re-evaluate the module.
+            server.moduleGraph.invalidateModule(mod);
+          }
           module = await server.ssrLoadModule(resolvedPath);
         } else if (this.environment.mode === 'build') {
           module = await jiti.import(resolvedPath);

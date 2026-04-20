@@ -136,6 +136,7 @@ export const layoutConfig = () => {
       slideLayerInitialWidth: types.cssLength(2),
       slideLayerPosition: z.enum(['left', 'right']).default('right'),
       slideLayerOffset: types.cssLength(28),
+      slideLayerClickOffset: types.cssLength(40),
     }),
   };
 

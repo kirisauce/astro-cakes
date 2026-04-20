@@ -8,10 +8,14 @@ const {
   slideLayerStyle,
   slideLayerPosition,
   slideLayerOffset,
+  slideLayerClickOffset,
 } = layout.component.PostLinkCard;
 
 const wrapperHoverTransformRules: string[] = [];
+const wrapperTransitionProperties: Set<string> = new Set();
 
+const leftneg = slideLayerPosition === 'left' ? '-' : '';
+const rightneg = slideLayerPosition === 'right' ? '-' : '';
 const swslStyle = new Switcher(slideLayerStyle, '');
 const slideLayerStylus =
   slideLayerStyle !== 'none'
@@ -22,18 +26,28 @@ const slideLayerStylus =
     align-items: ${slideLayerPosition === 'left' ? 'flex-start' : 'flex-end'};
 
     &:hover {
-      ${swslStyle.on(
-        'popout',
-        `&::before { transform: translateX(${
-          slideLayerPosition === 'left' ? '-' : ''
-        }${slideLayerOffset}); }`,
-      )}
+      &::before { 
+        ${swslStyle.on('popout', `transform: translateX(${leftneg}${slideLayerOffset});`)}
+      }
 
-      >.wrapper {
+      &>.wrapper {
         ${swslStyle.on(
           'squeeze',
           `margin-${slideLayerPosition}: ${slideLayerOffset};`,
         )}
+      }
+    }
+
+    &:active {
+      &::before {
+        ${swslStyle.on('popout', `transform: translateX(${leftneg}${slideLayerClickOffset});`)}
+      }
+
+      &>.wrapper {
+        ${swslStyle.onMap({
+          squeeze: `margin-${slideLayerPosition}: ${slideLayerClickOffset};`,
+          uncover: `transform: translateX(${rightneg}${slideLayerClickOffset});`,
+        })}
       }
     }
 
@@ -70,56 +84,47 @@ const slideLayerStylus =
       margin-${slideLayerPosition}: ${slideLayerInitialWidth};
       background-color: var(--secondary-container);
       border-radius: 14px;
-
-      ${apply(
-        swslStyle.onMap({
-          uncover: 'transform',
-          squeeze: `margin-${slideLayerPosition}`,
-        }),
-        (name) =>
-          name ? `transition: ${name} var(--expressive-default-effects);` : '',
-      )}
     }
   }
 `
     : '';
 if (slideLayerStyle === 'uncover') {
   wrapperHoverTransformRules.push(
-    `translateX(${
-      slideLayerPosition === 'left' ? '' : '-'
-    }${slideLayerOffset})`,
+    `translateX(${rightneg}${slideLayerOffset})`,
   );
+  wrapperTransitionProperties.add('transform');
+} else if (slideLayerStyle === 'squeeze') {
+  wrapperTransitionProperties.add(`margin-${slideLayerPosition}`);
 }
 
-const hoverEffectsStylus = `
-  .card.link-card {
-    ${
-      typeof hoverScale === 'number'
-        ? `
-        &>.wrapper {
-          ${
-            swslStyle.on('uncover', ' ') ||
-            'transition: transform var(--expressive-default-effects);'
-          }
-        }`
-        : ''
-    }
-  }
-`;
 if (typeof hoverScale === 'number') {
   wrapperHoverTransformRules.push(`scale(${hoverScale})`);
+  wrapperTransitionProperties.add('transform');
 }
 
 const mergedRulesCss = `
   .card.link-card { 
-    &:hover {
+    &:hover:not(:active) {
       &>.wrapper {
         ${apply(wrapperHoverTransformRules.join(' '), (rules) => (rules ? `transform: ${rules};` : ''))}
+      }
+    }
+
+    &>.wrapper {
+      ${
+        wrapperTransitionProperties
+          ? apply(
+              wrapperTransitionProperties
+                .keys()
+                .map((prop) => `${prop} var(--expressive-default-effects)`)
+                .toArray()
+                .join(','),
+              (props) => `transition: ${props};`,
+            )
+          : ''
       }
     }
   }
 `;
 
-export default stylus.render(
-  [slideLayerStylus, hoverEffectsStylus, mergedRulesCss].join('\n'),
-);
+export default stylus.render([slideLayerStylus, mergedRulesCss].join('\n'));
