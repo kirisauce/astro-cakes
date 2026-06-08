@@ -231,10 +231,14 @@ const PAGE_ATTR = 'data-basic-layout-page';
   }
 
   .aside {
-    flex: 0 1 280px;
+    flex: 0 1 320px;
+    min-width: 280px;
 
     @media (max-width: 1024px) {
-      max-width: 400px;
+      max-width: 500px;
+      width: 100%;
+      padding: 0 12px;
+      box-sizing: border-box;
     }
   }
 

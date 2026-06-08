@@ -101,9 +101,11 @@ if (typeof hoverScale === 'number') {
 
 const mergedRulesCss = `
   .card.link-card { 
-    &:hover:not(:active) {
-      &>.wrapper {
-        ${apply(wrapperHoverTransformRules.join(' '), (rules) => (rules ? `transform: ${rules};` : ''))}
+    @media (min-width: 1024px) {
+      &:hover:not(:active) {
+        &>.wrapper {
+          ${apply(wrapperHoverTransformRules.join(' '), (rules) => (rules ? `transform: ${rules};` : ''))}
+        }
       }
     }
 
