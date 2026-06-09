@@ -32,6 +32,7 @@ const PAGE_ATTR = 'data-basic-layout-page';
 >
   <head>
     <HeadBase {...head} />
+    <slot name="head-extra" />
   </head>
   <body>
     <LoadingIndicator />
