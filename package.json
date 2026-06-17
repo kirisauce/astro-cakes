@@ -12,12 +12,12 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/mdx": "^5.0.3",
-    "@astrojs/svelte": "^8.0.5",
-    "astro": "^6.1.8",
+    "@astrojs/mdx": "^5.0.6",
+    "@astrojs/svelte": "^8.1.2",
+    "astro": "^6.4.7",
     "sharp": "^0.34.5",
     "stylus": "^0.64.0",
-    "svelte": "^5.55.4",
+    "svelte": "^5.56.3",
     "typescript": "^5.9.3"
   },
   "trustedDependencies": [
@@ -27,17 +27,17 @@
   "devDependencies": {
     "@expressive-code/plugin-line-numbers": "^0.41.7",
     "@iconify-json/mdi": "^1.2.3",
-    "@iconify/utils": "^3.1.0",
-    "@types/node": "^25.6.0",
+    "@iconify/utils": "^3.1.3",
+    "@types/node": "^25.9.3",
     "@types/stylus": "^0.48.43",
     "astro-expressive-code": "^0.41.7",
-    "jiti": "^2.6.1",
+    "jiti": "^2.7.0",
     "mdast-util-to-string": "^4.0.0",
     "prettier-plugin-astro": "^0.14.1",
-    "prettier-plugin-svelte": "^4.1.0",
+    "prettier-plugin-svelte": "^4.1.1",
     "remark-parse": "^11.0.0",
     "unified": "^11.0.5",
     "unplugin-icons": "^23.0.1",
-    "vite": "^7.3.2"
+    "vite": "^7.3.5"
   }
 }
