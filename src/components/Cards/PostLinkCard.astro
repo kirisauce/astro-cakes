@@ -41,14 +41,16 @@ const uniqueId = generateId();
 >
   <div class="wrapper">
     <div class="content">
-      <CategoryBreadcrumb category={category} />
       <Label class="title" style="font-size:24px;">{post.data.title}</Label>
-      <div class="metas">
+      <div class="description">{description}</div>
+      <div class="time-row">
         <TimeMeta icon="mdi:calendar-edit-outline" time={updateDate} />
         <TimeMeta icon="mdi:calendar-outline" time={pubDate} />
-        <TagsMeta tags={tags} />
       </div>
-      <div class="description">{description}</div>
+      <div class="tags-category-row">
+        <TagsMeta tags={tags} />
+        <CategoryBreadcrumb category={category} />
+      </div>
     </div>
     <div class="cover">
       {
@@ -230,20 +232,28 @@ const uniqueId = generateId();
       gap: 12px;
     }
 
-    .metas {
+    .time-row {
       display: flex;
       flex-wrap: wrap;
       gap: 6px 8px;
       align-items: center;
-      width: 100%;
 
       @media (max-width: 1024px) {
         gap: 4px 6px;
       }
+    }
 
-      :global(.tags-row) {
-        width: 100%;
-        justify-content: flex-start;
+    .tags-category-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      gap: 8px;
+
+      @media (max-width: 1024px) {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
       }
     }
 
