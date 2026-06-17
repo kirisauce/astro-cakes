@@ -9,3 +9,4 @@
  */
 
 export { default as remarkInlineIcon } from './inline-icon';
+export { default as remarkGithubCard } from './github-card';

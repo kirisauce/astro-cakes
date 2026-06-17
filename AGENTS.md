@@ -35,7 +35,10 @@ astro-cakes/
     │   ├── preference.ts        localStorage 偏好存储（带跨标签页同步）
     │   ├── toggler.ts           通用显隐切换动画系统（支持预设/自动关闭）
     │   ├── utils.ts             视图过渡辅助函数
-    │   └── run/                 启动时立即执行的脚本（preference 初始化、navigate 桥接）
+    │   └── run/                 启动时立即执行的脚本
+    │       ├── preference.ts    localStorage 偏好初始化
+    │       ├── utils.ts         navigate 桥接
+    │       └── github-card.ts   GitHub 仓库卡片懒加载（IntersectionObserver + API fetch）
     ├── components/
     │   ├── Cards/               侧边栏/文章列表卡片
     │   │   ├── AuthorCard       作者信息卡
@@ -75,12 +78,16 @@ astro-cakes/
     │       ├── index.ts         统一入口
     │       ├── command-parser.ts 通用 ::cmd[arg]{attrs} 语法解析器
     │       ├── inline-icon.ts   ::i[src]{attrs} 内联图标插件
+    │       ├── github-card.ts   ::github[owner/repo] GitHub 仓库卡片插件
     │       └── parse-attrs.ts   属性字符串 key="val" 解析器
     ├── styles/                  样式（Stylus）
     │   ├── color.styl           OKLCH 调色板（浅色/深色双主题，色相可调）
     │   ├── variables.styl       CSS 变量 + 动画曲线 token
     │   ├── global.styl          全局样式 + View Transition 规则
     │   └── markdown/            Markdown 渲染样式
+    │       ├── common.styl      通用 Markdown 样式
+    │       ├── github-card.styl GitHub 仓库卡片样式（浅色半透明磨砂玻璃）
+    │       └── title.css        标题样式
     ├── types/                   TypeScript 类型定义（config 的 Zod schema）
     ├── utils/                   共享工具
     │   ├── configtool.ts        获取默认作者信息
@@ -108,21 +115,22 @@ astro-cakes/
 
 ## Key Files & Directories
 
-| 路径                        | 作用                                                     |
-| --------------------------- | -------------------------------------------------------- |
-| `astro.config.mts`          | Astro 配置（集成、Vite 插件、字体、Markdown）            |
-| `svelte.config.js`          | Svelte 预处理（vitePreprocess）                          |
-| `ec.config.mjs`             | Expressive Code 代码高亮配置（主题、行号）               |
-| `src/config.ts`             | **站点配置总入口**：修改站点标题/描述/作者/社交链接/布局 |
-| `src/content.config.ts`     | 博客 Frontmatter schema 定义                             |
-| `src/astro.ts`              | 构建时 HTML 后处理器（async script 注入）                |
-| `src/vite/index.ts`         | `virtual:dynamic-style` 插件（JS 驱动 CSS）              |
-| `src/server/icon-loader.ts` | 共享图标加载工具（Icon.astro 和 remark 插件共用管道）    |
-| `src/server/mdext/`         | 自定义 Markdown 扩展，提供 `::i[src]{attrs}` 内联图标语法 |
-| `src/styles/color.styl`     | OKLCH 调色板（修改主题色）                               |
-| `src/styles/variables.styl` | CSS 变量和动画曲线定义                                   |
-| `fonts/config.json`         | 字体子集配置文件                                         |
-| `.prettierrc`               | Prettier 格式化配置                                      |
+| 路径                            | 作用                                                                                                   |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `astro.config.mts`              | Astro 配置（集成、Vite 插件、字体、Markdown）                                                          |
+| `svelte.config.js`              | Svelte 预处理（vitePreprocess）                                                                        |
+| `ec.config.mjs`                 | Expressive Code 代码高亮配置（主题、行号）                                                             |
+| `src/config.ts`                 | **站点配置总入口**：修改站点标题/描述/作者/社交链接/布局                                               |
+| `src/content.config.ts`         | 博客 Frontmatter schema 定义                                                                           |
+| `src/astro.ts`                  | 构建时 HTML 后处理器（async script 注入）                                                              |
+| `src/vite/index.ts`             | `virtual:dynamic-style` 插件（JS 驱动 CSS）                                                            |
+| `src/server/icon-loader.ts`     | 共享图标加载工具（Icon.astro 和 remark 插件共用管道）                                                  |
+| `src/server/mdext/`             | 自定义 Markdown 扩展，提供 `::i[src]{attrs}` 内联图标语法和 `::github[owner/repo]` GitHub 仓库卡片语法 |
+| `src/client/run/github-card.ts` | GitHub 卡片客户端懒加载（IntersectionObserver + fetch API + 三态渲染）                                 |
+| `src/styles/color.styl`         | OKLCH 调色板（修改主题色）                                                                             |
+| `src/styles/variables.styl`     | CSS 变量和动画曲线定义                                                                                 |
+| `fonts/config.json`             | 字体子集配置文件                                                                                       |
+| `.prettierrc`                   | Prettier 格式化配置                                                                                    |
 
 ---
 
@@ -159,7 +167,7 @@ astro-cakes/
 - **内容集合定义**在 `src/content.config.ts`，修改文章 schema 时同步更新。
 - **配置是完全类型化的**：`src/types/config.ts` 中的 Zod schema 定义了 `siteConfig()` / `authorConfig()` / `themeConfig()` 等。不要在 `src/config.ts` 之外手动定义配置类型。
 - **样式求变**时优先修改 `src/styles/color.styl`（调色板）和 `src/styles/variables.styl`（动画 token）。
-- **Markdown 扩展 `src/server/mdext/`** 使用 `::命令名[参数]{属性}` 语法。当前支持 `::i` 命令（内联图标），通过 `command-parser.ts` 统一解析。添加新命令时：在 `mdext/` 新建插件文件 → `index.ts` 导出 → `astro.config.mts` remarkPlugins 注册。
+- **Markdown 扩展 `src/server/mdext/`** 使用 `::命令名[参数]{属性}` 语法。当前支持 `::i` 命令（内联图标）和 `::github` 命令（GitHub 仓库卡片），通过 `command-parser.ts` 统一解析。添加新命令时：在 `mdext/` 新建插件文件 → `index.ts` 导出 → `astro.config.mts` remarkPlugins 注册。
 - **图标相关修改**涉及三处：`Icon.astro`（Astro 组件）、`src/server/icon-loader.ts`（共享加载逻辑）、`src/server/mdext/inline-icon.ts`（remark 插件）。修改时需同步检查三者行为一致。
 - **PostLinkCard 的交互覆盖层**由 `src/components/Cards/PostLinkCard.ts`（JS 模块动态生成 Stylus）驱动，通过 `virtual:dynamic-style` 插件加载。修改覆盖层行为时要同时关注 `.ts` 文件和 `.astro` 文件。
 - **编译在 Bun 上验证**：`bun run build` 会执行完整构建。如果依赖安装后构建失败，检查 `astro.config.mts` 中 Vite `external` 配置是否遗漏了新依赖。
@@ -167,3 +175,4 @@ astro-cakes/
 - **色相可调**：用户可以通过 UI 滑块（0-359）改变主题色相，值存储在 `localStorage` 的 `theme-hue` 键中，覆盖 `src/config.ts` 中的 `theme.defaultHue`。
 - **字体文件**预生成并放在 `fonts/` 目录中，修改 `astro.config.mts` 中的字体配置后要确保对应的 `.woff2` 文件存在。
 - **代码高亮**配置在 `ec.config.mjs` 中，主题色在 `src/styles/color.styl` 中通过 `--color-hue` CSS 变量驱动。
+- **GitHub 卡片 `::github[owner/repo]`** 修改涉及三端：`src/server/mdext/github-card.ts`（remark 插件，生成占位 HTML）、`src/client/run/github-card.ts`（客户端懒加载，三态渲染）、`src/styles/markdown/github-card.styl`（半透明磨砂玻璃样式）。卡片图标（github/star/fork）在 `HeadBase.astro` 的 frontmatter 中通过 `loadIconSvg()` 构建时获取，注入到 `window.__CONFIG__.icons`；客户端通过 `icons?.github` / `icons?.star` / `icons?.fork` 访问，不加 class，颜色由 `fill="currentColor"` 继承父元素。
