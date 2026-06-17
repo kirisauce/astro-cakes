@@ -35,7 +35,11 @@ const customComponents = {
     <TagsMeta tags={tags} />
     <div class="meta-row">
       <TimeMeta icon="mdi:calendar-outline" time={pubDate} label="发布于" />
-      <TimeMeta icon="mdi:calendar-edit-outline" time={updateDate} label="更新于" />
+      <TimeMeta
+        icon="mdi:calendar-edit-outline"
+        time={updateDate}
+        label="更新于"
+      />
     </div>
     <StatsMeta content={post.body ?? ''} />
     {description?.trim() && <div class="description">{description}</div>}

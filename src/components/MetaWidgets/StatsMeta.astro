@@ -14,7 +14,10 @@ const wordCount = calcWordCount(content);
 
 <div class="meta-row">
   <Meta icon="mdi:clock-outline" content={`${readingTime} 分钟`} />
-  <Meta icon="mdi:text-box-outline" content={`${wordCount.toLocaleString()} 字`} />
+  <Meta
+    icon="mdi:text-box-outline"
+    content={`${wordCount.toLocaleString()} 字`}
+  />
 </div>
 
 <style lang="stylus">

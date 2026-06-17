@@ -130,7 +130,10 @@ export const calcWordCount = (content: string): number => {
   return chineseChars + englishWords;
 };
 
-export const calcReadingTime = (content: string, wordsPerMinute = 400): number => {
+export const calcReadingTime = (
+  content: string,
+  wordsPerMinute = 400,
+): number => {
   const wordCount = calcWordCount(content);
   return Math.max(1, Math.ceil(wordCount / wordsPerMinute));
 };
