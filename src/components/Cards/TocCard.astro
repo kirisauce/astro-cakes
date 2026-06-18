@@ -16,7 +16,7 @@ const { headings, autoScroll = true, title = '目录', ...other } = Astro.props;
   <Label style="font-size: 1.6rem; align-self: flex-start; margin-left: -16px;"
     >{title}</Label
   >
-  <TableOfContents {headings} {autoScroll} client:only />
+  <TableOfContents {headings} {autoScroll} client:visible />
 </div>
 
 <style lang="stylus">
