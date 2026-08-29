@@ -4,6 +4,7 @@ import { getDefaultAuthor } from '../utils/configtool';
 
 import type { CollectionEntry } from 'astro:content';
 import Icon from './Icon.astro';
+import { processPostUrl } from '../server/utils';
 
 export interface Props {
   post: CollectionEntry<'blog'>;
@@ -31,7 +32,7 @@ const authorName =
   authorConfig.authors[authorConfig.defaultAuthor ?? '']?.name ??
   getDefaultAuthor()?.name;
 
-const postUrl = Astro.url.href;
+const postUrl = processPostUrl(Astro.url.href);
 ---
 
 {
