@@ -48,7 +48,10 @@ const PAGE_ATTR = 'data-basic-layout-page';
       transition:name="navbar"
       id="navbar"
       data-toggle-preset="slide-down"
-    />
+    >
+      <slot name="right-extra" slot="right-extra" />
+      <slot name="nav-extra" slot="nav-extra" />
+    </NavBar>
     <div class="page" id="page" {...{ [PAGE_ATTR]: '' }}>
       {
         coverImage && (
@@ -216,6 +219,7 @@ const PAGE_ATTR = 'data-basic-layout-page';
     flex-direction: column;
     overflow-x: hidden;
     overflow-y: auto;
+    scrollbar-gutter: stable;
     background-color: var(--background);
 
     parallax() {
