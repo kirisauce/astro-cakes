@@ -15,9 +15,9 @@
 
   // 本项目滚动容器是 #page（BasicLayout .page），锁 body 无效。
   // 锁定滚动：不改变 #page 的 overflow（保持 auto，滚动条常驻不闪没，
-  // scrollbar-gutter: stable 保证槽位稳定），改为拦截遮罩上的滚动输入——
-  // 遮罩覆盖全屏（position:fixed，inset:0），wheel/touchmove 目标都是它，
-  // 给它 preventDefault 即可锁住背后内容滚动。
+  // scrollbar-gutter: stable 保证槽位稳定）。
+  // 遮罩/面板不在 #page 内部，滚动链结构上到不了 #page；preventDefault
+  // 只需兜底拦截传播到上层（body/html）的滚动输入。
   let scrollBlocker: ((e: Event) => void) | null = null;
   function lockScroll(locked: boolean) {
     const overlay = overlayEl;
@@ -34,13 +34,45 @@
     }
   }
 
-  function escHandler(e: KeyboardEvent) {
-    if (e.key === 'Escape') toggle(overlayEl!);
+  // 打开前的聚焦元素，关闭时归还（对话框焦点管理）
+  let lastFocused: HTMLElement | null = null;
+
+  // Esc 关闭；Tab 在面板内循环（焦点陷阱，防止 Tab 落入遮罩背后的内容）
+  function handleKeydown(e: KeyboardEvent) {
+    if (e.key === 'Escape') {
+      toggle(overlayEl!);
+      return;
+    }
+    if (e.key !== 'Tab') return;
+
+    const panel = panelEl;
+    if (!panel) return;
+    const focusables = Array.from(
+      panel.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ),
+    ).filter((el) => el.offsetParent !== null);
+    if (focusables.length === 0) return;
+
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    const active = document.activeElement;
+    const inPanel = active !== null && panel.contains(active);
+    if (!inPanel) {
+      e.preventDefault();
+      (e.shiftKey ? last : first).focus();
+    } else if (e.shiftKey && (active === first || active === panel)) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && active === last) {
+      e.preventDefault();
+      first.focus();
+    }
   }
 
   // 遮罩（#toc-drawer）的开合由 MenuButton 的
   // toggle(#toc-drawer, { autoCloseWhen: 'pointerdown' }) 驱动（fade 淡入淡出），
-  // 这里只做“伴随”：同步面板（slide-down）、锁滚动、Esc。
+  // 这里只做“伴随”：同步面板（slide-down）、锁滚动、Esc/Tab、焦点管理。
   // $effect 依赖 overlayEl + panelEl，两者都赋值后才建 observer，
   // 清理也走 $effect 的返回函数（只在客户端触发，SSR 安全）。
   let observer: MutationObserver | null = null;
@@ -57,13 +89,20 @@
           toggle(panel, { presetName: 'slide-down' });
         }
         lockScroll(true);
-        document.addEventListener('keydown', escHandler);
+        document.addEventListener('keydown', handleKeydown);
+        lastFocused =
+          document.activeElement instanceof HTMLElement
+            ? document.activeElement
+            : null;
+        panel.focus();
       } else {
         if (panel.getAttribute('data-toggler-state') !== 'hide') {
           toggle(panel, { presetName: 'slide-down' });
         }
         lockScroll(false);
-        document.removeEventListener('keydown', escHandler);
+        document.removeEventListener('keydown', handleKeydown);
+        if (lastFocused?.isConnected) lastFocused.focus();
+        lastFocused = null;
       }
     });
     observer.observe(overlay, {
@@ -75,7 +114,7 @@
       observer?.disconnect();
       observer = null;
       lockScroll(false);
-      document.removeEventListener('keydown', escHandler);
+      document.removeEventListener('keydown', handleKeydown);
     };
   });
 
@@ -218,22 +257,15 @@
   .panel-body {
     flex: 1;
     min-height: 0;
-    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
     padding-top: 8px;
-    scrollbar-width: thin;
-    scrollbar-color: unquote("color-mix(in srgb, var(--text) 15%, transparent) transparent");
+  }
 
-    &::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    &::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background: unquote("color-mix(in srgb, var(--text) 15%, transparent)");
-      border-radius: 3px;
-    }
+  // 约束 .toc-root（子组件内部）为可滚动区域，与 TocCard 侧栏一致，
+  // 保证 TableOfContents 的 autoScroll 在抽屉内生效。
+  .panel-body :global(.toc-root) {
+    flex: 1;
+    min-height: 0;
   }
 </style>
