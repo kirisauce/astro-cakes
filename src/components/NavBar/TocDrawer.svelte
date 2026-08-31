@@ -191,7 +191,7 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    background-color: unquote("color-mix(in oklch, var(--primary-container) 72%, transparent)");
+    background-color: var(--primary-container-72);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     padding: 12px 24px 16px;

@@ -2,6 +2,10 @@ hue = var(--color-hue, 0)
 redhue = 25
 selectionhue = "calc(%s + 45)" % hue
 
+// ── 主调色板（OKLCH，现代浏览器）─────────────────────────────────
+// 语义色：light → dark 两个值，色相由 var(--color-hue) 动态注入。
+// 半透明 token（--*-72/60/65/8/22/15/78）：替代 color-mix()，
+// 让不支持 color-mix 的旧浏览器也能获得半透明色。
 palette = {
   surface-hover: oklch(92% 1% hue)   oklch(24% 1% hue)
   primary:    oklch(58% 22% hue)     oklch(72% 20% hue)
@@ -33,4 +37,61 @@ palette = {
   shadow: oklch(0% 0% hue \/ 0.08) oklch(0% 0% hue \/ 0.3)
 
   meta-bg: oklch(94% 1% hue \/ 0.5) oklch(26% 2% hue \/ 0.4)
+
+  // 半透明 token（原 color-mix 语义）：
+  // primary-container 72% / text 15% / border 60% / surface 78%
+  // on-error-container 65%、8%、22%
+  primary-container-72: oklch(93% 3% hue \/ 0.72) oklch(26% 4% hue \/ 0.72)
+  text-15:              oklch(25% 1.5% hue \/ 0.15) oklch(93% 1% hue \/ 0.15)
+  border-60:            oklch(90% 1% hue \/ 0.6)   oklch(28% 1.5% hue \/ 0.6)
+  surface-78:           oklch(97% 0.8% hue \/ 0.78) oklch(16% 1% hue \/ 0.78)
+  on-error-container-65: oklch(35% 14% redhue \/ 0.65) oklch(92% 6% redhue \/ 0.65)
+  on-error-container-8:  oklch(35% 14% redhue \/ 0.08) oklch(92% 6% redhue \/ 0.08)
+  on-error-container-22: oklch(35% 14% redhue \/ 0.22) oklch(92% 6% redhue \/ 0.22)
+}
+
+// ── HSL 回退调色板（旧浏览器：不支持 oklch / color-mix）────────────
+// 结构与 palette 完全一致：[0]=light, [1]=dark。
+// 色相同样由 var(--color-hue) 动态注入 → 旧浏览器色相滑块仍可用；
+// error 固定 25；selection hue +45。值以字符串字面量给出。
+fallback-palette = {
+  surface-hover: "hsl(var(--color-hue, 0), 8%, 92%)"   "hsl(var(--color-hue, 0), 8%, 24%)"
+  primary:       "hsl(var(--color-hue, 0), 65%, 58%)"  "hsl(var(--color-hue, 0), 65%, 72%)"
+  secondary:     "hsl(var(--color-hue, 0), 55%, 55%)"  "hsl(var(--color-hue, 0), 55%, 68%)"
+  background:    "hsl(var(--color-hue, 0), 5%, 99%)"   "hsl(var(--color-hue, 0), 8%, 11%)"
+  surface:       "hsl(var(--color-hue, 0), 7%, 97%)"   "hsl(var(--color-hue, 0), 8%, 16%)"
+  border:        "hsl(var(--color-hue, 0), 8%, 90%)"   "hsl(var(--color-hue, 0), 10%, 28%)"
+  text:          "hsl(var(--color-hue, 0), 8%, 25%)"   "hsl(var(--color-hue, 0), 7%, 93%)"
+  text-muted:    "hsl(var(--color-hue, 0), 10%, 45%)"  "hsl(var(--color-hue, 0), 10%, 72%)"
+  nav:           "hsl(var(--color-hue, 0), 6%, 98%)"   "hsl(var(--color-hue, 0), 8%, 14%)"
+
+  primary-container:    "hsl(var(--color-hue, 0), 18%, 93%)" "hsl(var(--color-hue, 0), 25%, 26%)"
+  on-primary-container: "hsl(var(--color-hue, 0), 60%, 35%)" "hsl(var(--color-hue, 0), 40%, 90%)"
+  secondary-container:  "hsl(var(--color-hue, 0), 16%, 92%)" "hsl(var(--color-hue, 0), 22%, 22%)"
+  on-secondary-container: "hsl(var(--color-hue, 0), 60%, 35%)" "hsl(var(--color-hue, 0), 35%, 88%)"
+  surface-container:    "hsl(var(--color-hue, 0), 6%, 96%)"   "hsl(var(--color-hue, 0), 8%, 20%)"
+  on-surface-container: "hsl(var(--color-hue, 0), 8%, 25%)"   "hsl(var(--color-hue, 0), 7%, 92%)"
+  container:            "hsl(var(--color-hue, 0), 4%, 99%)"   "hsl(var(--color-hue, 0), 7%, 13%)"
+  on-container:         "hsl(var(--color-hue, 0), 8%, 25%)"   "hsl(var(--color-hue, 0), 7%, 92%)"
+
+  error:              "hsl(25, 55%, 55%)" "hsl(25, 50%, 70%)"
+  error-container:    "hsl(25, 18%, 93%)" "hsl(25, 30%, 28%)"
+  on-error:           "hsl(25, 0%, 100%)" "hsl(25, 0%, 0%)"
+  on-error-container: "hsl(25, 45%, 35%)" "hsl(25, 30%, 92%)"
+
+  selection-text:       "hsl(calc(var(--color-hue, 0) + 45), 45%, 45%)" "hsl(calc(var(--color-hue, 0) + 45), 35%, 85%)"
+  selection-background: "hsl(calc(var(--color-hue, 0) + 45), 25%, 90%)" "hsl(calc(var(--color-hue, 0) + 45), 30%, 32%)"
+
+  shadow: "hsla(var(--color-hue, 0), 0%, 0%, 0.08)" "hsla(var(--color-hue, 0), 0%, 0%, 0.3)"
+
+  meta-bg: "hsla(var(--color-hue, 0), 8%, 94%, 0.5)" "hsla(var(--color-hue, 0), 12%, 26%, 0.4)"
+
+  // 半透明 token 的 HSL 版本
+  primary-container-72: "hsla(var(--color-hue, 0), 18%, 93%, 0.72)" "hsla(var(--color-hue, 0), 25%, 26%, 0.72)"
+  text-15:              "hsla(var(--color-hue, 0), 8%, 25%, 0.15)"  "hsla(var(--color-hue, 0), 7%, 93%, 0.15)"
+  border-60:            "hsla(var(--color-hue, 0), 8%, 90%, 0.6)"   "hsla(var(--color-hue, 0), 10%, 28%, 0.6)"
+  surface-78:           "hsla(var(--color-hue, 0), 7%, 97%, 0.78)"  "hsla(var(--color-hue, 0), 8%, 16%, 0.78)"
+  on-error-container-65: "hsla(25, 45%, 35%, 0.65)" "hsla(25, 30%, 92%, 0.65)"
+  on-error-container-8:  "hsla(25, 45%, 35%, 0.08)" "hsla(25, 30%, 92%, 0.08)"
+  on-error-container-22: "hsla(25, 45%, 35%, 0.22)" "hsla(25, 30%, 92%, 0.22)"
 }

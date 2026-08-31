@@ -275,7 +275,7 @@
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-width: thin;
-    scrollbar-color: unquote("color-mix(in srgb, var(--text) 15%, transparent) transparent");
+    scrollbar-color: var(--text-15) transparent;
 
     &::-webkit-scrollbar {
       width: 6px;
@@ -286,7 +286,7 @@
     }
 
     &::-webkit-scrollbar-thumb {
-      background: unquote("color-mix(in srgb, var(--text) 15%, transparent)");
+      background: var(--text-15);
       border-radius: 3px;
     }
   }

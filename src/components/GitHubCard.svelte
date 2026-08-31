@@ -402,7 +402,7 @@
   .placeholder,
   .loading,
   .loaded {
-    background: color-mix(in oklch, var(--surface), transparent 22%);
+    background: var(--surface-78);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border: 1px solid var(--border);
@@ -683,9 +683,9 @@
     margin-left: auto;
     width: 36px;
     height: 36px;
-    border: 1px solid color-mix(in oklch, var(--on-error-container), transparent 35%);
+    border: 1px solid var(--on-error-container-65);
     border-radius: 10px;
-    background: color-mix(in oklch, var(--on-error-container), transparent 92%);
+    background: var(--on-error-container-8);
     padding: 0;
     color: inherit;
     cursor: pointer;
@@ -701,7 +701,7 @@
   }
 
   .retry:hover {
-    background: color-mix(in oklch, var(--on-error-container), transparent 78%);
+    background: var(--on-error-container-22);
     border-color: var(--on-error-container);
   }
 
