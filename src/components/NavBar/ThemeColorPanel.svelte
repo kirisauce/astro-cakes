@@ -23,6 +23,7 @@
   onMount(() => {
     preferencesReadyThen(() => {
       const prefs = getGlobalPreferences();
+      preferenceChangedListener();
       prefs.themeHue.addEventListener('change', preferenceChangedListener);
       if (elInput) {
         const pct = (prefs.themeHue.value / 359) * 100;
