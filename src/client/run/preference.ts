@@ -3,9 +3,10 @@ import type {
   ColorSchemePreference,
   PreferenceTable,
 } from '../../types/client';
-import { computed, ref } from '../../utils/reactive';
+import { computed } from '../../utils/reactive';
 import { StoredPreference, type StoredPreferenceOptions } from '../preference';
 import { mayStartViewTransition } from '../utils';
+import { theme } from '../../config';
 
 export const preference = <T>(
   key: string,
@@ -25,7 +26,7 @@ window.__PREFERENCES__ = {
 
   themeHue: preference<number>('theme-hue', {
     default() {
-      return 0;
+      return theme.defaultHue;
     },
 
     serialize(value) {
