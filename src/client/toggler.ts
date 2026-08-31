@@ -139,10 +139,13 @@ export const toggle = (
   const previousAnimId = el.getAttribute(ANIM_ID_KEY);
   if (previousAnimId) {
     const anim = el.getAnimations().find((anim) => anim.id === previousAnimId);
+    console.log(`before commit: ${el.style.opacity}`);
     try {
       anim?.commitStyles();
     } catch (err) {}
+    console.log(`after commit: ${el.style.opacity}`);
     anim?.cancel();
+    console.log(`after cancel: ${el.style.opacity}`);
   }
 
   // Remove previous auto-close listener if it exists
@@ -163,9 +166,14 @@ export const toggle = (
     const { keyframes, options } = preset.exit;
 
     // Configure the animation
+    if (!options.fill) {
+      options.fill = 'forwards';
+    }
+
     const anim = el.animate(keyframes, options);
     anim.id = generateId();
     anim.addEventListener('finish', (ev) => {
+      anim.commitStyles();
       el.style.display = 'none';
       el.removeAttribute(ANIM_ID_KEY);
     });
@@ -182,9 +190,14 @@ export const toggle = (
     const { keyframes, options } = preset.enter;
 
     // Configure the animation
+    if (!options.fill) {
+      options.fill = 'forwards';
+    }
+
     const anim = el.animate(keyframes, options);
     anim.id = generateId();
     anim.addEventListener('finish', (ev) => {
+      anim.commitStyles();
       el.removeAttribute(ANIM_ID_KEY);
       try {
         anim.commitStyles();
