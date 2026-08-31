@@ -12,3 +12,17 @@ export const mayStartViewTransition = (
     callbackOrOptions?.update?.();
   }
 };
+
+export const getGlobalPreferences = () => window['__PREFERENCES__'];
+
+export const preferencesReadyThen = (cb: () => void) => {
+  if (window.__PREFERENCES__) {
+    cb();
+  } else {
+    if (window.__PREFERENCES_READY_CALLBACKS__ !== undefined) {
+      window.__PREFERENCES_READY_CALLBACKS__.push(cb);
+    } else {
+      window.__PREFERENCES_READY_CALLBACKS__ = [cb];
+    }
+  }
+};

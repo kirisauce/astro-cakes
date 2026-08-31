@@ -55,6 +55,15 @@ window.__PREFERENCES__ = {
     updateHtmlHue();
     document.addEventListener('astro:page-load', updateHtmlHue);
   }
+
+  // Run callbacks
+  if (window.__PREFERENCES_READY_CALLBACKS__ !== undefined) {
+    for (let cb of window.__PREFERENCES_READY_CALLBACKS__) {
+      cb();
+    }
+  }
+
+  delete window.__PREFERENCES_READY_CALLBACKS__;
 })(window.__PREFERENCES__);
 
 const matchDarkColorScheme = window.matchMedia('(prefers-color-scheme: dark)');
