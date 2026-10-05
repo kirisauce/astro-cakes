@@ -7,6 +7,7 @@ import CategoryBreadcrumb from '../MetaWidgets/CategoryBreadcrumb.astro';
 import Label from '../Label.astro';
 import TimeMeta from '../MetaWidgets/TimeMeta.astro';
 import TagsMeta from '../MetaWidgets/TagsMeta.astro';
+import { resolveDisplayDate } from '../../utils/format';
 
 export interface Props {
   post: CollectionEntry<'blog'>;
@@ -17,6 +18,8 @@ export interface Props {
 
 const { post, updateDate, pubDate, description } = Astro.props;
 const { category, tags } = post.data;
+
+const { time: displayDate, updated } = resolveDisplayDate(pubDate, updateDate);
 
 const uniqueId = generateId();
 ---
@@ -42,10 +45,10 @@ const uniqueId = generateId();
     <div class="content">
       <Label class="title" style="font-size:20px;">{post.data.title}</Label>
       <div class="description">{description}</div>
-      <div class="time-row">
-        <TimeMeta icon="mdi:calendar-edit-outline" time={updateDate} />
-        <TimeMeta icon="mdi:calendar-outline" time={pubDate} />
-      </div>
+      <TimeMeta
+        icon={updated ? 'mdi:calendar-edit-outline' : 'mdi:calendar-outline'}
+        time={displayDate}
+      />
       <div class="tags-category-row">
         <TagsMeta tags={tags} />
         <CategoryBreadcrumb class="category" category={category} />
@@ -223,13 +226,6 @@ const uniqueId = generateId();
     align-items: flex-start;
     gap: 10px;
     padding: 16px;
-
-    .time-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px 8px;
-      align-items: center;
-    }
 
     .tags-category-row {
       display: flex;
