@@ -44,4 +44,7 @@ export const layout = cfg.defineLayoutConfig({
   basic: {
     aside: 'left',
   },
+  backToTop: {
+    enabled: true,
+  },
 });

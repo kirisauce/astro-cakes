@@ -4,6 +4,7 @@ import HeadBase from '../components/HeadBase.astro';
 import { Image } from 'astro:assets';
 import NavBar from '../components/NavBar.astro';
 import LoadingIndicator from '../components/LoadingIndicator.astro';
+import BackToTop from '../components/BackToTop.svelte';
 import PageFooter from '../components/PageFooter.astro';
 import { fade } from 'astro:transitions';
 import { m3anim } from '../utils/consts';
@@ -46,6 +47,16 @@ const PAGE_ATTR = 'data-basic-layout-page';
   </head>
   <body>
     <LoadingIndicator />
+    {
+      // 放在 .page 之外：.page 在视差封面下带 perspective，会成为 fixed 后代的包含块
+      layout.backToTop.enabled && (
+        <BackToTop
+          client:only="svelte"
+          scrollContainer="#page"
+          threshold={layout.backToTop.threshold}
+        />
+      )
+    }
     <NavBar
       transition:name="navbar"
       id="navbar"
