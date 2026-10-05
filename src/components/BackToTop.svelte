@@ -10,7 +10,14 @@
 
   const { scrollContainer = '#page', threshold = 1 }: Props = $props();
 
+  // 进度环几何：viewBox 0 0 64 64，半径按线宽留出边距
+  const RING_RADIUS = 29.5;
+  const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
+
   let visible = $state(false);
+  let progress = $state(0);
+
+  const dashOffset = $derived(RING_CIRCUMFERENCE * (1 - progress));
 
   $effect(() => {
     const container = document.querySelector<HTMLElement>(scrollContainer);
@@ -19,6 +26,9 @@
     const limit = container.clientHeight * threshold;
     const onScroll = () => {
       visible = container.scrollTop > limit;
+
+      const max = container.scrollHeight - container.clientHeight;
+      progress = max > 0 ? container.scrollTop / max : 0;
     };
 
     onScroll();
@@ -37,23 +47,36 @@
   }
 </script>
 
-<button
-  id="back-to-top"
-  class="back-to-top"
-  class:visible
-  type="button"
-  aria-label="返回顶部"
-  title="返回顶部"
-  aria-hidden={!visible}
-  tabindex={visible ? 0 : -1}
-  onclick={scrollToTop}
->
-  <IconArrowUp />
-</button>
+<div class="back-to-top" class:visible>
+  <svg class="ring" viewBox="0 0 64 64" aria-hidden="true">
+    <circle class="ring-track" cx="32" cy="32" r={RING_RADIUS} />
+    <circle
+      class="ring-value"
+      cx="32"
+      cy="32"
+      r={RING_RADIUS}
+      stroke-dasharray={RING_CIRCUMFERENCE}
+      stroke-dashoffset={dashOffset}
+    />
+  </svg>
+
+  <button
+    id="back-to-top"
+    class="btn"
+    type="button"
+    aria-label="返回顶部"
+    title="返回顶部"
+    aria-hidden={!visible}
+    tabindex={visible ? 0 : -1}
+    onclick={scrollToTop}
+  >
+    <IconArrowUp />
+  </button>
+</div>
 
 <style lang="stylus">
-  // 显隐与 hover 反馈共用的常驻过渡
-  motion = opacity var(--expressive-fast-effects), translate var(--expressive-fast-spatial), background-color var(--expressive-default-effects), box-shadow var(--expressive-default-effects), scale var(--expressive-fast-spatial)
+  // 显隐共用的常驻过渡
+  motion = opacity var(--expressive-fast-effects), translate var(--expressive-fast-spatial), scale var(--expressive-fast-spatial)
 
   .back-to-top {
     position: fixed;
@@ -65,20 +88,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 48px;
-    height: 48px;
-    padding: 0;
-    box-sizing: border-box;
-    border: 1px solid var(--border);
-    border-radius: 50%;
-    background-color: var(--primary-container-72);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    box-shadow:
-      0 12px 32px -8px var(--shadow),
-      0 2px 6px -2px var(--shadow);
-    color: var(--secondary);
-    cursor: pointer;
+    width: 64px;
+    height: 64px;
 
     // 离场：缩小 + 下沉 + 淡出，visibility 等过渡走完再切
     opacity: 0;
@@ -102,16 +113,78 @@
     }
 
     &:hover {
-      background-color: var(--primary-container);
-      box-shadow:
-        0 16px 40px -8px var(--shadow),
-        0 2px 6px -2px var(--shadow);
       scale: 1.08;
+
+      .btn {
+        background-color: var(--primary-container);
+        box-shadow:
+          0 16px 40px -8px var(--shadow),
+          0 2px 6px -2px var(--shadow);
+      }
     }
 
     &:active {
       scale: 0.94;
     }
+
+    @media (max-width: 640px) {
+      right: 16px;
+      bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+      width: 56px;
+      height: 56px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  .ring {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    // 让填充从 12 点方向顺时针开始
+    transform: rotate(-90deg);
+    pointer-events: none;
+
+    circle {
+      fill: none;
+      stroke-width: 3;
+      stroke-linecap: round;
+    }
+  }
+
+  .ring-track {
+    stroke: var(--border-60);
+  }
+
+  .ring-value {
+    stroke: var(--primary);
+  }
+
+  .btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    box-sizing: border-box;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background-color: var(--primary-container-72);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow:
+      0 12px 32px -8px var(--shadow),
+      0 2px 6px -2px var(--shadow);
+    color: var(--secondary);
+    cursor: pointer;
+    transition:
+      background-color var(--expressive-default-effects),
+      box-shadow var(--expressive-default-effects);
 
     &:focus-visible {
       outline: 2px solid var(--primary);
@@ -124,14 +197,8 @@
     }
 
     @media (max-width: 640px) {
-      right: 16px;
-      bottom: calc(16px + env(safe-area-inset-bottom, 0px));
       width: 44px;
       height: 44px;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      transition: none;
     }
   }
 </style>
