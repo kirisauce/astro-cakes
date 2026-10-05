@@ -139,13 +139,10 @@ export const toggle = (
   const previousAnimId = el.getAttribute(ANIM_ID_KEY);
   if (previousAnimId) {
     const anim = el.getAnimations().find((anim) => anim.id === previousAnimId);
-    console.log(`before commit: ${el.style.opacity}`);
     try {
       anim?.commitStyles();
     } catch (err) {}
-    console.log(`after commit: ${el.style.opacity}`);
     anim?.cancel();
-    console.log(`after cancel: ${el.style.opacity}`);
   }
 
   // Remove previous auto-close listener if it exists
