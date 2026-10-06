@@ -65,7 +65,7 @@ const PAGE_ATTR = 'data-basic-layout-page';
       <slot name="right-extra" slot="right-extra" />
       <slot name="nav-extra" slot="nav-extra" />
     </NavBar>
-    <div class="page" id="page" {...{ [PAGE_ATTR]: '' }}>
+    <div class="page" id="page" tabindex="-1" {...{ [PAGE_ATTR]: '' }}>
       {
         coverImage && (
           <div
@@ -245,6 +245,11 @@ const PAGE_ATTR = 'data-basic-layout-page';
     }
     &:has(.half-parallax) {
       parallax();
+    }
+
+    // 仅作程序性焦点落点（BackToTop 交还焦点），不显示轮廓
+    &:focus {
+      outline: none;
     }
   }
 

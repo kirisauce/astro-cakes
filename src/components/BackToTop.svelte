@@ -16,6 +16,7 @@
 
   let visible = $state(false);
   let progress = $state(0);
+  let btn: HTMLButtonElement | undefined;
 
   const dashOffset = $derived(RING_CIRCUMFERENCE * (1 - progress));
 
@@ -25,7 +26,14 @@
 
     const limit = container.clientHeight * threshold;
     const onScroll = () => {
-      visible = container.scrollTop > limit;
+      const next = container.scrollTop > limit;
+
+      // 按钮即将隐藏而仍持有焦点时，先把焦点交还滚动容器，以免焦点掉落 body
+      if (!next && document.activeElement === btn) {
+        container.focus({ preventScroll: true });
+      }
+
+      visible = next;
 
       const max = container.scrollHeight - container.clientHeight;
       progress = max > 0 ? container.scrollTop / max : 0;
@@ -66,9 +74,9 @@
     type="button"
     aria-label="返回顶部"
     title="返回顶部"
-    aria-hidden={!visible}
-    tabindex={visible ? 0 : -1}
+    inert={!visible}
     onclick={scrollToTop}
+    bind:this={btn}
   >
     <IconArrowUp />
   </button>
