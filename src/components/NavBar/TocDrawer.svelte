@@ -13,6 +13,9 @@
   let overlayEl: HTMLDivElement | null = $state(null);
   let panelEl: HTMLDivElement | null = $state(null);
 
+  // 首次打开后才挂载目录树：隐藏面板里的构建与自动展开会触发量不到高度的折叠动画
+  let tocMounted = $state(false);
+
   // 本项目滚动容器是 #page（BasicLayout .page），锁 body 无效。
   // 锁定滚动：不改变 #page 的 overflow（保持 auto，滚动条常驻不闪没，
   // scrollbar-gutter: stable 保证槽位稳定）。
@@ -88,6 +91,7 @@
         if (panel.getAttribute('data-toggler-state') !== 'show') {
           toggle(panel, { presetName: 'slide-down' });
         }
+        tocMounted = true;
         lockScroll(true);
         document.addEventListener('keydown', handleKeydown);
         lastFocused =
@@ -165,7 +169,9 @@
     </button>
   </div>
   <div class="panel-body">
-    <TableOfContents {headings} autoScroll onNavigate={closeWithAnim} />
+    {#if tocMounted}
+      <TableOfContents {headings} autoScroll onNavigate={closeWithAnim} />
+    {/if}
   </div>
 </div>
 
