@@ -1,8 +1,6 @@
 export const mayStartViewTransition = (
   callbackOrOptions?:
-    | ViewTransitionUpdateCallback
-    | StartViewTransitionOptions
-    | undefined,
+    ViewTransitionUpdateCallback | StartViewTransitionOptions | undefined,
 ) => {
   if (!!document.startViewTransition) {
     return document.startViewTransition(callbackOrOptions);

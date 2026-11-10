@@ -39,8 +39,7 @@ export class Switcher<T extends string | number | symbol, D> {
   onMap<M extends Partial<Record<T, any>>>(map: M): M[keyof M] | D | undefined {
     return (
       (Object.entries(map).find(([k, v]) => k === this.#value)?.[1] as
-        | M[T]
-        | undefined) ?? this.#defaultValue
+        M[T] | undefined) ?? this.#defaultValue
     );
   }
 }
